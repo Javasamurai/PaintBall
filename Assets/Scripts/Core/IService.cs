@@ -5,8 +5,12 @@ namespace Core
         /// <summary>
         /// Initialize the service and prepare it for use.
         /// </summary>
-        public abstract void Initialize();
+        public void Initialize();
         
+        /// <summary>
+        /// Update the service
+        /// </summary>
+        public void Update();
         /// <summary>
         /// Cleanup the service and release any resources it holds.
         /// </summary>

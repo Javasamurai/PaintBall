@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Core
 {
     public class AudioService : IService
@@ -10,6 +12,16 @@ namespace Core
         public void Shutdown()
         {
             
+        }
+
+        public void Update()
+        {
+            
+        }
+
+        public void PlaySound(string soundName)
+        {
+            Debug.Log($"Playing sound: {soundName}");
         }
     }
 }

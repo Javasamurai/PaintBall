@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,6 +13,8 @@ namespace Core
         private const string AUTO_LOAD_BOOTSTRAP_SCENE_KEY = "Game/AutoLoadBootStrapScene";
 
         private static bool _autoLoadBootStrapScene;
+        
+        private Game _game;
 
         [MenuItem("Game/AutoLoadBootStrapScene")]
         private static void EnableAutoLoadBootStrapScene()
@@ -34,7 +37,7 @@ namespace Core
                 SceneManager.LoadSceneAsync(MENU_SCENE_NAME, LoadSceneMode.Additive);
             }
 
-            InitializeServices();
+            InitializeGame();
         }
 
         private static void Setup()
@@ -52,9 +55,21 @@ namespace Core
             }
         }
 
-        private void InitializeServices()
+        private void InitializeGame()
         {
-            Game game = new Game();
+            _game = new Game();
+            _game.Initialize();
+        }
+
+        private void Update()
+        {
+            _game?.Update();
+        }
+
+        private void OnDestroy()
+        {
+            _game?.Shutdown();
+            _game = null;
         }
     }
 }
