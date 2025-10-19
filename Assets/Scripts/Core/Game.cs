@@ -1,22 +1,25 @@
 using System;
 using System.Collections.Generic;
+using Unity.NetCode;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Core
 {
     public class Game : ILifeCycle
     {
         private AudioService _audioService;
+        private NetworkService _networkService;
         
         public static Game Instance { get; private set; }
         
-        private static readonly Dictionary<Type, IService> _services = new Dictionary<Type, IService>();
+        private static readonly Dictionary<Type, IService> _services = new ();
 
         public Game()
         {
             if (Instance != null)
             {
-                throw new System.Exception("Game instance already exists.");
+                throw new Exception("Game instance already exists.");
             }
             Instance = this;
         }
@@ -32,7 +35,6 @@ namespace Core
 
         private void CreateWorld()
         {
-            
         }
 
         public void Update()
@@ -47,9 +49,10 @@ namespace Core
         private void InitializeServices()
         {
             _audioService = new AudioService();
-            _audioService.Initialize();
+            _networkService = new NetworkService();
+            _services[typeof(NetworkService)] = _networkService;
             _services[typeof(AudioService)] = _audioService;
-
+            
             foreach (var service in _services.Values)
             {
                 service.Initialize();
