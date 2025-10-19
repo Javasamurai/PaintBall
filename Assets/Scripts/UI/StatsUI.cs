@@ -13,14 +13,18 @@ namespace UI
         private TextMeshProUGUI _fpsText;
         [SerializeField]
         private TextMeshProUGUI _pingText;
+        public string Fps
+        {
+            set => _fpsText.text = value;
+        }
 
+        private float displayTimer = 0f;
+        private float displayUpdateTime = 0.1f;
         private void Start()
         {
-            _pingText.text = "Ping: Calculating...";
-            
             foreach (var world in World.All)
             {
-                if (world.IsClient())
+                if (world.IsClient() && !world.IsThinClient())
                 {
                     var pingSystem = world.GetOrCreateSystemManaged<PingUISystem>();
                     pingSystem.StatsUI = this;
@@ -32,13 +36,21 @@ namespace UI
 
         private void Update()
         {
-            if (_fpsText != null)
+            displayTimer += Time.unscaledDeltaTime;
+            if (displayTimer >= displayUpdateTime)
             {
-                _fpsText.text = $"FPS: {Mathf.RoundToInt(1.0f / Time.unscaledDeltaTime)}";
+                displayTimer = 0f;
+                if (_fpsText != null)
+                {
+                    _fpsText.text = $"FPS: {Mathf.RoundToInt(1.0f / Time.unscaledDeltaTime)}";
+                }
             }
         }
     }
     
+    [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
+    [DisableAutoCreation]
     public partial class PingUISystem : SystemBase
     {
         public StatsUI StatsUI;
@@ -46,7 +58,32 @@ namespace UI
         
         protected override void OnUpdate()
         {
-            Debug.Log("Updating PingUI System");
+            Debug.Log("Stats UI:" + StatsUI);
+            CompleteDependency();
+            if (SystemAPI.TryGetSingletonEntity<NetworkStreamConnection>(out var connectionEntity))
+            {
+                var connection = EntityManager.GetComponentData<NetworkStreamConnection>(connectionEntity);
+                var address = SystemAPI.GetSingletonRW<NetworkStreamDriver>().ValueRO.GetRemoteEndPoint(connection).Address;
+                
+                if (EntityManager.HasComponent<NetworkId>(connectionEntity))
+                {
+                    if (string.IsNullOrEmpty(pingText) || UnityEngine.Time.frameCount % 30 == 0)
+                    {
+                        var networkSnapshotAck = EntityManager.GetComponentData<NetworkSnapshotAck>(connectionEntity);
+                        pingText = networkSnapshotAck.EstimatedRTT > 0 ? $"Ping: {networkSnapshotAck.EstimatedRTT}ms" : "Ping: Connected";
+                    }
+                }
+                else
+                {
+                    pingText = "Ping: Not connected!";
+                }
+                
+                StatsUI.Fps = pingText;
+            }
+            else
+            {
+                StatsUI.Fps = "Ping: Not connected!";
+            }
         }
     }
 }

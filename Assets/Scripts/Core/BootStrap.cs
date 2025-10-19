@@ -13,7 +13,6 @@ namespace Core
         private const string AUTO_LOAD_BOOTSTRAP_SCENE_KEY = "Game/AutoLoadBootStrapScene";
 
         private static bool _autoLoadBootStrapScene;
-        
         private Game _game;
 
         [MenuItem("Game/AutoLoadBootStrapScene")]
@@ -21,6 +20,13 @@ namespace Core
         {
             _autoLoadBootStrapScene = !_autoLoadBootStrapScene;
             EditorPrefs.SetBool(AUTO_LOAD_BOOTSTRAP_SCENE_KEY, _autoLoadBootStrapScene);
+            Menu.SetChecked(AUTO_LOAD_BOOTSTRAP_SCENE_KEY, _autoLoadBootStrapScene);
+        }
+        
+        [InitializeOnLoadMethod]
+        private static void OnEditorLoad()
+        {
+            _autoLoadBootStrapScene = EditorPrefs.GetBool(AUTO_LOAD_BOOTSTRAP_SCENE_KEY, true);
             Menu.SetChecked(AUTO_LOAD_BOOTSTRAP_SCENE_KEY, _autoLoadBootStrapScene);
         }
 
