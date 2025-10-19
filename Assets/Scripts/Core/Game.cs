@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.NetCode;
 using UnityEngine;
-using Object = System.Object;
 
 namespace Core
 {
@@ -10,7 +8,9 @@ namespace Core
     {
         private AudioService _audioService;
         private NetworkService _networkService;
+        private SceneService _sceneService;
         
+        public static bool IsReady { get; private set; }
         public static Game Instance { get; private set; }
         
         private static readonly Dictionary<Type, IService> _services = new ();
@@ -31,6 +31,7 @@ namespace Core
             
             InitializeServices();
             CreateWorld();
+            IsReady = true;
         }
 
         private void CreateWorld()
@@ -50,8 +51,11 @@ namespace Core
         {
             _audioService = new AudioService();
             _networkService = new NetworkService();
+            _sceneService = new SceneService();
+            
             _services[typeof(NetworkService)] = _networkService;
             _services[typeof(AudioService)] = _audioService;
+            _services[typeof(SceneService)] = _sceneService;
             
             foreach (var service in _services.Values)
             {

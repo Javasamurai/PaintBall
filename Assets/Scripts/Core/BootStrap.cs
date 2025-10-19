@@ -1,4 +1,4 @@
-using System;
+using DefaultNamespace;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,9 +7,6 @@ namespace Core
 {
     public class BootStrap : MonoBehaviour
     {
-        public const string BOOTSTRAP_SCENE_NAME = "BootStrap_Scene";
-        public const string MENU_SCENE_NAME = "Menu_Scene";
-
         private const string AUTO_LOAD_BOOTSTRAP_SCENE_KEY = "Game/AutoLoadBootStrapScene";
 
         private static bool _autoLoadBootStrapScene;
@@ -38,26 +35,22 @@ namespace Core
 
         private void Start()
         {
-            if (SceneManager.loadedSceneCount == 1)
-            {
-                SceneManager.LoadSceneAsync(MENU_SCENE_NAME, LoadSceneMode.Additive);
-            }
-
             InitializeGame();
         }
 
         private static void Setup()
         {
             var autoLoadBootStrapScene = EditorPrefs.GetBool(AUTO_LOAD_BOOTSTRAP_SCENE_KEY, true);
+            
             // Load the BootStrap scene, because this is the first scene that should be loaded
             if (!autoLoadBootStrapScene)
             {
                 return;
             }
 
-            if (SceneManager.GetActiveScene().name != BOOTSTRAP_SCENE_NAME)
+            if (SceneManager.GetActiveScene().name != Utils.BOOTSTRAP_SCENE)
             {
-                SceneManager.LoadScene(BOOTSTRAP_SCENE_NAME);
+                SceneManager.LoadScene(Utils.BOOTSTRAP_SCENE);
             }
         }
 
