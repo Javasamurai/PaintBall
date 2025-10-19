@@ -13,9 +13,9 @@ namespace UI
         private TextMeshProUGUI _fpsText;
         [SerializeField]
         private TextMeshProUGUI _pingText;
-        public string Fps
+        public string Ping
         {
-            set => _fpsText.text = value;
+            set => _pingText.text = value;
         }
 
         private float displayTimer = 0f;
@@ -58,7 +58,6 @@ namespace UI
         
         protected override void OnUpdate()
         {
-            Debug.Log("Stats UI:" + StatsUI);
             CompleteDependency();
             if (SystemAPI.TryGetSingletonEntity<NetworkStreamConnection>(out var connectionEntity))
             {
@@ -78,11 +77,11 @@ namespace UI
                     pingText = "Ping: Not connected!";
                 }
                 
-                StatsUI.Fps = pingText;
+                StatsUI.Ping = pingText;
             }
             else
             {
-                StatsUI.Fps = "Ping: Not connected!";
+                StatsUI.Ping = "Ping: Not connected!";
             }
         }
     }
