@@ -1,0 +1,40 @@
+using Core;
+using DefaultNamespace;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace UI
+{
+    public class LobbyUIView : UIView
+    {
+        [SerializeField] private TMP_InputField nameInputField;
+        [SerializeField] private Button startButton;
+        [SerializeField] private TextMeshProUGUI errorText;
+        
+        private void Start()
+        {
+            startButton.interactable = false;
+            startButton.onClick.AddListener(OnStartButtonClicked);
+            nameInputField.onValueChanged.AddListener(text =>
+            {
+                if (string.IsNullOrEmpty(text))
+                {
+                    errorText.text = "Name input field cannot be empty.";
+                }
+                else
+                {
+                    errorText.text = string.Empty;
+                    startButton.interactable = true;
+                }
+            });
+        }
+
+        private void OnStartButtonClicked()
+        {
+            Debug.Log($"Starting game with player name: {nameInputField.text}");
+            
+            Game.GetService<SceneService>().LoadSceneAsync(Utils.PLAYGROUND_SCENE);
+        }
+    }
+}

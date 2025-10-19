@@ -18,5 +18,7 @@ EditorBuildSettings:
     path: Assets/NetcodeForEntitiesSetup/Scenes/Gameplay.unity
     guid: 754d05cbc041d4edfa5f8eac2fda0377
   m_configObjects:
+    com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 642cd680b89114d6a8a1e4f86947c659, type: 2}
+    com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
