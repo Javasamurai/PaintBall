@@ -34,7 +34,8 @@ namespace UI
         {
             Debug.Log($"Starting game with player name: {nameInputField.text}");
             
-            Game.GetService<SceneService>().LoadSceneAsync(Utils.PLAYGROUND_SCENE);
+            Utils.PLAYER_NAME = nameInputField.text;
+            Game.GetService<SceneService>().LoadSceneAsync(Utils.PLAYGROUND_SCENE, false);
         }
     }
 }

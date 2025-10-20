@@ -1,6 +1,7 @@
 using System;
 using Core;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Core
 {
@@ -21,19 +22,28 @@ namespace Core
             
         }
 
-        public void LoadSceneAsync(string sceneName, bool additive = true, Action onComplete = null)
+        public void LoadSceneAsync(string sceneName, bool additive = true, Action<Scene> onComplete = null)
         {
-            AsyncOperation asyncOperation = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName, additive ? UnityEngine.SceneManagement.LoadSceneMode.Additive : UnityEngine.SceneManagement.LoadSceneMode.Single);
+            AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneName, additive ? LoadSceneMode.Additive : UnityEngine.SceneManagement.LoadSceneMode.Single);
             
             asyncOperation.completed += operation =>
             {
                 if (operation.isDone)
                 {
-                    onComplete?.Invoke();
+                    var scene = SceneManager.GetSceneByName(sceneName);
+                    if (scene.IsValid())
+                    {
+                        onComplete?.Invoke(scene);
+                    }
+                    else
+                    {
+                        onComplete?.Invoke(default);
+                    }
                 }
                 else
                 {
                     Debug.LogError($"Failed to load scene {sceneName}");
+                    onComplete?.Invoke(default);
                 }
             };
         }

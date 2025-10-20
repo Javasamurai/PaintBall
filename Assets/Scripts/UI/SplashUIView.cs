@@ -21,18 +21,36 @@ namespace UI
             yield return new WaitWhile(() => Game.IsReady);
 
             _canvasGroup.alpha = 1;
-            while (_canvasGroup.alpha < 1f)
+            while (_canvasGroup.alpha > 0f)
             {
-                _canvasGroup.alpha -= Time.deltaTime / 2f;
+                _canvasGroup.alpha -= Time.deltaTime;
                 yield return null;
             }
-            // var asyncOperation = SceneManager.LoadSceneAsync(Utils.MAIN_MENU_SCENE, LoadSceneMode.Additive);
-            // asyncOperation.allowSceneActivation = true;
-            // asyncOperation.completed += operation =>
-            // {
-                _canvasGroup.alpha = 0f;
-                _canvas.enabled = false;
-            // };
+            
+            if (!string.IsNullOrEmpty(Utils.PLAYER_NAME))
+            {
+                Game.GetService<SceneService>().LoadSceneAsync(Utils.PLAYGROUND_SCENE, true, (scene) =>
+                {
+                    if (scene == default) return;
+                    SceneManager.SetActiveScene(scene);
+                    DeactivateCanvas();
+                });
+            }
+            else
+            {
+                Game.GetService<SceneService>().LoadSceneAsync(Utils.MAIN_MENU_SCENE, true, (scene) =>
+                {
+                    if (scene == default) return;
+                    SceneManager.SetActiveScene(scene);
+                    DeactivateCanvas();
+                });
+            }
+        }
+        
+        private void DeactivateCanvas()
+        {
+            _canvasGroup.alpha = 0f;
+            _canvas.enabled = false;
         }
     }
 }
