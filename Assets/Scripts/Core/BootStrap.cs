@@ -15,6 +15,7 @@ namespace Core
         private static bool _autoLoadBootStrapScene;
         private Game _game;
 
+# if UNITY_EDITOR
         [MenuItem("Game/AutoLoadBootStrapScene")]
         private static void EnableAutoLoadBootStrapScene()
         {
@@ -35,15 +36,19 @@ namespace Core
         {
             Setup();
         }
+        # endif
 
         private void Start()
         {
-            StartCoroutine(InitializeGame());
+            InitializeGame();
         }
 
         private static void Setup()
         {
-            var autoLoadBootStrapScene = EditorPrefs.GetBool(Utils.AUTO_LOAD_BOOTSTRAP_SCENE_KEY, true);
+            bool autoLoadBootStrapScene = true;
+# if UNITY_EDITOR
+            autoLoadBootStrapScene = EditorPrefs.GetBool(Utils.AUTO_LOAD_BOOTSTRAP_SCENE_KEY, true);
+#endif
             
             // Load the BootStrap scene, because this is the first scene that should be loaded
             if (!autoLoadBootStrapScene)
@@ -57,16 +62,8 @@ namespace Core
             }
         }
 
-        private IEnumerator InitializeGame()
+        private void InitializeGame()
         {
-            while (ClientServerBootstrap.HasClientWorlds && (ClientServerBootstrap.ClientWorld == null || !ClientServerBootstrap.ClientWorld.IsCreated))
-            {
-                yield return null;
-            }
-            while (ClientServerBootstrap.HasServerWorld && (ClientServerBootstrap.ServerWorld == null || !ClientServerBootstrap.ServerWorld.IsCreated))
-            {
-                yield return null;
-            }
             _game = new Game(gameConfig);
             _game.Initialize();
         }

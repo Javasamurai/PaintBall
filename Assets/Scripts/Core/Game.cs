@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using DefaultNamespace;
+using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 
 namespace Core
@@ -12,6 +14,20 @@ namespace Core
         private SceneService _sceneService;
         private PlayerServices _playerServices;
         private GameConfig _gameConfig;
+        
+        
+        public enum Role
+        {
+            ServerClient = 0,
+            Server = 1,
+            Client = 2
+        }
+        
+        private Role _role = Role.ServerClient;
+        private World _serverWorld;
+        private World _clientWorld;
+        public World ServerWorld => _serverWorld;
+        public World ClientWorld => _clientWorld;
         
         public static bool IsReady { get; private set; }
         public static Game Instance { get; private set; }
@@ -32,8 +48,42 @@ namespace Core
         {
             Application.runInBackground = true;
             Application.targetFrameRate = 60;
+            CreateWorlds();
             InitializeServices();
             IsReady = true;
+        }
+        
+        private void CreateWorlds()
+        {
+            if (Application.isEditor)
+            {
+                _role = Role.ServerClient;
+            }
+            else
+            {
+                _role = Role.Client;
+            }
+            
+
+            if (_role == Role.ServerClient || _role == Role.Server)
+            {
+                _serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
+            }
+            if (_role == Role.ServerClient || _role == Role.Client)
+            {
+                _clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
+            }
+
+            foreach (var world in World.All)
+            {
+                if (world.Flags == WorldFlags.Game)
+                {
+                    world.Dispose();
+                    break;
+                }
+            }
+
+            World.DefaultGameObjectInjectionWorld = _serverWorld ?? _clientWorld;
         }
 
         public void Update()

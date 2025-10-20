@@ -16,6 +16,7 @@ namespace Systems
     public struct InitializedClientTag : IComponentData
     {
     }
+    [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     public partial class ServerRPCSystem : SystemBase
     {
         private ComponentLookup<NetworkId> _clients;
@@ -30,7 +31,7 @@ namespace Systems
         protected override void OnUpdate()
         {
             _clients.Update(this);
-            var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
+            var commandBuffer = new EntityCommandBuffer(Allocator.Temp);    
             
             foreach (var (receive, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientRPCCommand>>().WithEntityAccess())
             {
@@ -41,15 +42,24 @@ namespace Systems
             foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClientTag>().WithEntityAccess())
             {
                 commandBuffer.AddComponent<InitializedClientTag>(entity);
-                UnityEngine.Debug.Log($"Server initialized client {entity.Index} - {id.ValueRO.Value}");
+                UnityEngine.Debug.Log($"Server initialized client {id.ValueRO.Value}");
             }
 
-            foreach (var (receive, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<SpawnPlayerRPCCommand>>().WithEntityAccess())
+            SpawnEntity(commandBuffer);
+
+            commandBuffer.Playback(EntityManager);
+            commandBuffer.Dispose();
+        }
+
+        private void SpawnEntity(EntityCommandBuffer commandBuffer)
+        {
+            foreach (var (receive, command, entity) in SystemAPI
+                         .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<SpawnPlayerRPCCommand>>().WithEntityAccess())
             {
                 if (SystemAPI.TryGetSingleton<SpawnerData>(out var spawnData))
                 {
                     var playerEntity = commandBuffer.Instantiate(spawnData.PlayerPrefab);
-                    
+
                     commandBuffer.SetComponent(playerEntity, new LocalTransform()
                     {
                         Position = new float3(100, 0, 100f),
@@ -61,18 +71,16 @@ namespace Systems
                     {
                         NetworkId = networkId.Value
                     });
-                     commandBuffer.AddComponent<NetworkStreamInGame>(playerEntity);
+                    commandBuffer.AddComponent<NetworkStreamInGame>(playerEntity);
 
                     // Add to the buffer
-                    commandBuffer.AppendToBuffer(receive.ValueRO.SourceConnection, new LinkedEntityGroup { Value = playerEntity });
+                    commandBuffer.AppendToBuffer(receive.ValueRO.SourceConnection,
+                        new LinkedEntityGroup { Value = playerEntity });
                     commandBuffer.DestroyEntity(entity);
                 }
             }
-
-            commandBuffer.Playback(EntityManager);
-            commandBuffer.Dispose();
         }
-        
+
         public void SendRPC(string text, World world, Entity clientEntity)
         {
             if (string.IsNullOrEmpty(text) || !world.IsCreated)

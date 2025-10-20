@@ -1,6 +1,6 @@
-using DefaultNamespace;
+using System.Net;
+using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
 using Unity.NetCode;
 using Unity.Networking.Transport;
 
@@ -8,28 +8,38 @@ namespace Core
 {
     public class NetworkService : IService
     {
+        private const string IP_ADDRESS_LISTEN = "127.0.0.1";
+        private const string IP_ADDRESS_CONNECT = "127.0.0.1";
+
         private const int _port = 7979;
+        
         public void Initialize()
         {
-            var networkOverride = new GameObject("NetworkOverride");
-            var overrideNetwork = networkOverride.AddComponent<OverrideAutomaticNetcodeBootstrap>();
-            overrideNetwork.ForceAutomaticBootstrapInScene = NetCodeConfig.AutomaticBootstrapSetting.EnableAutomaticBootstrap;
             StartConnection();
         }
         
         private void StartConnection()
         {
-            // NetworkEndpoint ep = NetworkEndpoint.AnyIpv4.WithPort(_port);
-            // using var drvQuery = ClientServerBootstrap.ServerWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            // drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(ClientServerBootstrap.DefaultListenAddress.WithPort(_port));
-            
-            // Start server
-            // using var drvQuery = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            // drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(ClientServerBootstrap.ClientWorld.EntityManager, ep);
-
-            if (NetCodeBootstrap.IsBootstrappingEnabledForScene())
+            if (Game.Instance.ServerWorld != null)
             {
-                Game.GetService<SceneService>().LoadSceneAsync(Utils.PLAYGROUND_SCENE);
+                NetworkEndpoint ep = NetworkEndpoint.AnyIpv4.WithPort(_port);
+                using var drvQuery = Game.Instance.ServerWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+                drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(NetworkEndpoint.Parse(IP_ADDRESS_LISTEN, _port));
+            }
+
+            if (Game.Instance.ClientWorld != null)
+            {
+                IPAddress ipAddress = IPAddress.Parse(IP_ADDRESS_CONNECT);
+                NativeArray<byte> nativeArray =
+                    new NativeArray<byte>(ipAddress.GetAddressBytes().Length, Allocator.Temp);
+                
+                nativeArray.CopyFrom(ipAddress.GetAddressBytes());
+                NetworkEndpoint endpoint = NetworkEndpoint.AnyIpv4;
+                endpoint.SetRawAddressBytes(nativeArray);
+                endpoint.Port = _port;
+                
+                using var drvQuery = Game.Instance.ClientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+                drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(Game.Instance.ClientWorld.EntityManager, endpoint);
             }
         }
 

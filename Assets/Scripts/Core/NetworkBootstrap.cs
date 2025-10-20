@@ -8,13 +8,6 @@ namespace Core
     {
         public override bool Initialize(string defaultWorldName)
         {
-            if (IsBootstrappingEnabledForScene())
-            {
-                AutoConnectPort = 7979;
-                CreateDefaultClientServerWorlds();
-                return true;
-            }
-
             AutoConnectPort = 0;
             return false;
         }

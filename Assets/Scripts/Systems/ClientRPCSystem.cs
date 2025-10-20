@@ -3,7 +3,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Systems
 {
@@ -28,8 +27,7 @@ namespace Systems
         protected override void OnUpdate()
         {
             var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
-
-
+            
             foreach (var (receive, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ServerRPCCommand>>().WithEntityAccess())
             {
                 Debug.Log($"Client received RPC from server {entity.Index}: {command.ValueRO.message}");
@@ -38,7 +36,7 @@ namespace Systems
             
             if (Game.IsReady && Game.GetService<PlayerServices>().CanSpawn && !Game.GetService<PlayerServices>().IsSpawned)
             {
-                SendSpawnPlayerRPC(ClientServerBootstrap.ClientWorld);
+                SendSpawnPlayerRPC(Game.Instance.ClientWorld);
                 Game.GetService<PlayerServices>().SpawnPlayer();
             }
             commandBuffer.Playback(EntityManager);

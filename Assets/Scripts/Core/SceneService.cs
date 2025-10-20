@@ -53,29 +53,39 @@ namespace Core
         {
             
             SubScene[] subScenes = Object.FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            
-            foreach (var subScene in subScenes)
+
+            World clientWorld = Game.Instance.ClientWorld;
+            World serverWorld = Game.Instance.ServerWorld;
+
+            if (serverWorld != null)
             {
-                SceneSystem.LoadParameters loadParameters = new SceneSystem.LoadParameters
+                foreach (var subScene in subScenes)
                 {
-                    Flags = SceneLoadFlags.BlockOnImport
-                };
-                var sceneEntity = SceneSystem.LoadSceneAsync(ClientServerBootstrap.ServerWorld.Unmanaged, new Unity.Entities.Hash128(subScene.SceneGUID.Value), loadParameters);
-                while (!SceneSystem.IsSceneLoaded(ClientServerBootstrap.ServerWorld.Unmanaged, sceneEntity))
-                {
-                    ClientServerBootstrap.ServerWorld.Update();
+                    SceneSystem.LoadParameters loadParameters = new SceneSystem.LoadParameters
+                    {
+                        Flags = SceneLoadFlags.BlockOnImport
+                    };
+                    var sceneEntity = SceneSystem.LoadSceneAsync(serverWorld.Unmanaged, new Unity.Entities.Hash128(subScene.SceneGUID.Value), loadParameters);
+                    while (!SceneSystem.IsSceneLoaded(serverWorld.Unmanaged, sceneEntity))
+                    {
+                        serverWorld.Update();
+                    }
                 }
             }
-            foreach (var subScene in subScenes)
+
+            if (clientWorld != null)
             {
-                SceneSystem.LoadParameters loadParameters = new SceneSystem.LoadParameters
+                foreach (var subScene in subScenes)
                 {
-                    Flags = SceneLoadFlags.BlockOnImport
-                };
-                var sceneEntity = SceneSystem.LoadSceneAsync(ClientServerBootstrap.ClientWorld.Unmanaged, new Unity.Entities.Hash128(subScene.SceneGUID.Value), loadParameters);
-                while (!SceneSystem.IsSceneLoaded(ClientServerBootstrap.ClientWorld.Unmanaged, sceneEntity))
-                {
-                    ClientServerBootstrap.ClientWorld.Update();
+                    SceneSystem.LoadParameters loadParameters = new SceneSystem.LoadParameters
+                    {
+                        Flags = SceneLoadFlags.BlockOnImport
+                    };
+                    var sceneEntity = SceneSystem.LoadSceneAsync(clientWorld.Unmanaged, new Unity.Entities.Hash128(subScene.SceneGUID.Value), loadParameters);
+                    while (!SceneSystem.IsSceneLoaded(clientWorld.Unmanaged, sceneEntity))
+                    {
+                        clientWorld.Update();
+                    }
                 }
             }
         }
