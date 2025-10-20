@@ -1,4 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
 using DefaultNamespace;
+using Unity.NetCode;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,8 +10,8 @@ namespace Core
 {
     public class BootStrap : MonoBehaviour
     {
-        private const string AUTO_LOAD_BOOTSTRAP_SCENE_KEY = "Game/AutoLoadBootStrapScene";
-
+        [SerializeField] GameConfig gameConfig;
+        
         private static bool _autoLoadBootStrapScene;
         private Game _game;
 
@@ -16,15 +19,15 @@ namespace Core
         private static void EnableAutoLoadBootStrapScene()
         {
             _autoLoadBootStrapScene = !_autoLoadBootStrapScene;
-            EditorPrefs.SetBool(AUTO_LOAD_BOOTSTRAP_SCENE_KEY, _autoLoadBootStrapScene);
-            Menu.SetChecked(AUTO_LOAD_BOOTSTRAP_SCENE_KEY, _autoLoadBootStrapScene);
+            EditorPrefs.SetBool(Utils.AUTO_LOAD_BOOTSTRAP_SCENE_KEY, _autoLoadBootStrapScene);
+            Menu.SetChecked(Utils.AUTO_LOAD_BOOTSTRAP_SCENE_KEY, _autoLoadBootStrapScene);
         }
         
         [InitializeOnLoadMethod]
         private static void OnEditorLoad()
         {
-            _autoLoadBootStrapScene = EditorPrefs.GetBool(AUTO_LOAD_BOOTSTRAP_SCENE_KEY, true);
-            Menu.SetChecked(AUTO_LOAD_BOOTSTRAP_SCENE_KEY, _autoLoadBootStrapScene);
+            _autoLoadBootStrapScene = EditorPrefs.GetBool(Utils.AUTO_LOAD_BOOTSTRAP_SCENE_KEY, true);
+            Menu.SetChecked(Utils.AUTO_LOAD_BOOTSTRAP_SCENE_KEY, _autoLoadBootStrapScene);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -35,12 +38,12 @@ namespace Core
 
         private void Start()
         {
-            InitializeGame();
+            StartCoroutine(InitializeGame());
         }
 
         private static void Setup()
         {
-            var autoLoadBootStrapScene = EditorPrefs.GetBool(AUTO_LOAD_BOOTSTRAP_SCENE_KEY, true);
+            var autoLoadBootStrapScene = EditorPrefs.GetBool(Utils.AUTO_LOAD_BOOTSTRAP_SCENE_KEY, true);
             
             // Load the BootStrap scene, because this is the first scene that should be loaded
             if (!autoLoadBootStrapScene)
@@ -54,9 +57,17 @@ namespace Core
             }
         }
 
-        private void InitializeGame()
+        private IEnumerator InitializeGame()
         {
-            _game = new Game();
+            while (ClientServerBootstrap.HasClientWorlds && (ClientServerBootstrap.ClientWorld == null || !ClientServerBootstrap.ClientWorld.IsCreated))
+            {
+                yield return null;
+            }
+            while (ClientServerBootstrap.HasServerWorld && (ClientServerBootstrap.ServerWorld == null || !ClientServerBootstrap.ServerWorld.IsCreated))
+            {
+                yield return null;
+            }
+            _game = new Game(gameConfig);
             _game.Initialize();
         }
 

@@ -65,9 +65,9 @@ namespace UI
                 
                 if (EntityManager.HasComponent<NetworkId>(connectionEntity))
                 {
-                    if (string.IsNullOrEmpty(pingText) || UnityEngine.Time.frameCount % 30 == 0)
+                    if (UnityEngine.Time.frameCount % 30 == 0)
                     {
-                        var networkSnapshotAck = EntityManager.GetComponentData<NetworkSnapshotAck>(connectionEntity);
+                        var networkSnapshotAck = EntityManager.GetComponentData<NetworkSnapshotAck>(connectionEntity); 
                         pingText = networkSnapshotAck.EstimatedRTT > 0 ? $"Ping: {networkSnapshotAck.EstimatedRTT}ms" : "Ping: Connected";
                     }
                 }

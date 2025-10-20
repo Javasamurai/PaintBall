@@ -11,6 +11,10 @@ namespace DefaultNamespace
         public static readonly string PLAYGROUND_SCENE = "Playground_Scene";
         # endregion
         
+        # region EDITOR SPECIFIC
+        public const string AUTO_LOAD_BOOTSTRAP_SCENE_KEY = "Game/AutoLoadBootStrapScene";
+        #endregion
+
         # region PLAYER_PREFS CONSTS
         public static readonly string PLAYER_NAME_PREF = "PlayerName";
         #endregion
