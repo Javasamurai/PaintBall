@@ -42,16 +42,16 @@ namespace Systems
             foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClientTag>().WithEntityAccess())
             {
                 commandBuffer.AddComponent<InitializedClientTag>(entity);
+                SpawnEntity(commandBuffer, id.ValueRO.Value);
                 UnityEngine.Debug.Log($"Server initialized client {id.ValueRO.Value}");
             }
 
-            SpawnEntity(commandBuffer);
 
             commandBuffer.Playback(EntityManager);
             commandBuffer.Dispose();
         }
 
-        private void SpawnEntity(EntityCommandBuffer commandBuffer)
+        private void SpawnEntity(EntityCommandBuffer commandBuffer, int networkID)
         {
             foreach (var (receive, command, entity) in SystemAPI
                          .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<SpawnPlayerRPCCommand>>().WithEntityAccess())
@@ -66,12 +66,11 @@ namespace Systems
                         Rotation = quaternion.identity,
                         Scale = 1f
                     });
-                    var networkId = _clients[receive.ValueRO.SourceConnection];
                     commandBuffer.SetComponent(playerEntity, new GhostOwner()
                     {
-                        NetworkId = networkId.Value
+                        NetworkId = networkID
                     });
-                    commandBuffer.AddComponent<NetworkStreamInGame>(playerEntity);
+                    commandBuffer.AddComponent<NetworkStreamInGame>(receive.ValueRO.SourceConnection);
 
                     // Add to the buffer
                     commandBuffer.AppendToBuffer(receive.ValueRO.SourceConnection,

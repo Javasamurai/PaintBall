@@ -160,6 +160,7 @@ GameObject:
   - component: {fileID: 8116409570424056730}
   - component: {fileID: 3655574180819881896}
   - component: {fileID: 1958530739944409488}
+  - component: {fileID: -3005688583844731919}
   m_Layer: 8
   m_Name: PlayerCapsule_Network
   m_TagString: Player
@@ -245,7 +246,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8616685848737228372}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 909d917d73a63f940ac158d02e936645, type: 3}
   m_Name: 
@@ -272,7 +273,7 @@ MonoBehaviour:
   jump: 0
   sprint: 0
   analogMovement: 0
-  cursorLocked: 1
+  cursorLocked: 0
   cursorInputForLook: 1
 --- !u!114 &8616685848737228376
 MonoBehaviour:
@@ -396,7 +397,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c79d771cedb4794bf100ce60df5f764, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultGhostMode: 2
+  DefaultGhostMode: 1
   SupportedGhostModes: 3
   OptimizationMode: 0
   Importance: 50
@@ -459,3 +460,16 @@ MonoBehaviour:
   AnimationGraphAsset: {fileID: 0}
   EvaluateGraphInPrediction: 0
   IgnoreEvents: 0
+--- !u!114 &-3005688583844731919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8616685848737228372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1841dc96dc24337a91709c0eb0c4127, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 4
