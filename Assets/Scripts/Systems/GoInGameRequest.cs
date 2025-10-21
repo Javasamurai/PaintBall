@@ -3,6 +3,8 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Burst;
+using Unity.Mathematics;
+using Unity.Transforms;
 
 namespace Systems
 {
@@ -109,7 +111,13 @@ namespace Systems
                 var player = commandBuffer.Instantiate(prefab);
                 commandBuffer.SetComponent(player, new GhostOwner {NetworkId = networkId.Value});
 
-                // This syncs player entity after sync/desyn
+                commandBuffer.SetComponent(player, new LocalTransform()
+                {
+                    Position = new float3(100, 0, 100f),
+                    Rotation = quaternion.identity,
+                    Scale = 1f
+                });
+                // This syncs player entity after sync/desync
                 commandBuffer.AppendToBuffer(reqSrc.ValueRO.SourceConnection, new LinkedEntityGroup {Value = player});
 
                 commandBuffer.DestroyEntity(reqEntity);
