@@ -7,11 +7,13 @@ namespace Systems.Gameplay
     {
         public float MoveSpeed;
         public float SprintSpeed;
+        public float LookSensitivity;
     }
 
     public class Player : MonoBehaviour
     {
         [SerializeField] public float speed;
+        [SerializeField] public float Look;
     }
 
     public class PlayerBaker : Baker<Player>
@@ -23,9 +25,11 @@ namespace Systems.Gameplay
             // Move this to a config
             AddComponent(entity, new PlayerData
             {
-                MoveSpeed = authoring.speed
+                MoveSpeed = authoring.speed,
+                LookSensitivity = authoring.Look
             });
             AddComponent<PlayerInputData>(entity);
+            AddComponent<HealthComponent>(entity);
         }
     }
 }

@@ -38,7 +38,22 @@ namespace Systems.Gameplay
         {
             float3 direction = new float3(inputData.move.x, 0, inputData.move.y);
             float3 movement = direction * playerData.MoveSpeed * DeltaTime;
-            transform.Position += movement;
+            float2 look = inputData.look;
+
+            float deltaTimeMultiplier = 1;
+
+            // _cinemachineTargetPitch += _input.look.y * RotationSpeed * deltaTimeMultiplier;
+            var rotationVelocity = look.x * playerData.LookSensitivity * DeltaTime;
+
+            // clamp our pitch rotation
+            // _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+
+            // Update Cinemachine camera target pitch
+            // CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
+            // var quaternion = Quaternion.Euler(look.y * playerData.LookSensitivity * DeltaTime, look.x * playerData.LookSensitivity * DeltaTime, 0);
+            transform.Rotation = math.mul(transform.Rotation, quaternion.RotateY(rotationVelocity));
+            var localMove = math.mul(transform.Rotation, new float3(movement.x, 0, movement.z));
+            transform.Position += localMove;
         }
     }
 }

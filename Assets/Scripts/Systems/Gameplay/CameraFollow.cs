@@ -1,5 +1,6 @@
 using Cinemachine;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
@@ -8,6 +9,7 @@ namespace Systems.Gameplay
 {
     public class CameraFollow : MonoBehaviour
     {
+        [SerializeField] private Vector3 cameraOffset;
         [SerializeField]
         CinemachineVirtualCamera virtualCamera;
         
@@ -22,7 +24,9 @@ namespace Systems.Gameplay
                 {
                     var cameraFollowSystem = world.GetOrCreateSystemManaged<CameraFollowSystem>();
                     cameraFollowSystem.cameraTarget = cameraTarget;
+                    cameraFollowSystem.offset = new float3(cameraOffset.x, cameraOffset.y, cameraOffset.z);
                     virtualCamera.Follow = cameraTarget;
+                    // virtualCamera.LookAt = cameraTarget;
                     var simulationSystemGroup = world.GetExistingSystemManaged<SimulationSystemGroup>();
                     simulationSystemGroup.AddSystemToUpdateList(cameraFollowSystem);
                 }
@@ -36,6 +40,8 @@ namespace Systems.Gameplay
     public partial class CameraFollowSystem : SystemBase
     {
         public Transform cameraTarget;
+        public float3 offset;
+        
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -46,11 +52,12 @@ namespace Systems.Gameplay
         {
             if (cameraTarget == null)
             {
-                Debug.LogWarning("Virtual Camera is not assigned in CameraFollowSystem.");
+                Debug.LogWarning("Camera target is not assigned in CameraFollowSystem.");
                 return;
             }
 
             Entity localPlayerEntity = Entity.Null;
+
             foreach (var (networkStream, entity) in SystemAPI.Query<RefRO<PlayerData>>().WithAny<GhostOwnerIsLocal>().WithEntityAccess())
             {
                 localPlayerEntity = entity;
@@ -61,7 +68,8 @@ namespace Systems.Gameplay
             {
                 // Get the position of the local player
                 var localTransform = SystemAPI.GetComponent<LocalTransform>(localPlayerEntity);
-                cameraTarget.position = localTransform.Position;
+                cameraTarget.position = localTransform.Position + offset;
+                cameraTarget.rotation = localTransform.Rotation;
             }
         }
     }

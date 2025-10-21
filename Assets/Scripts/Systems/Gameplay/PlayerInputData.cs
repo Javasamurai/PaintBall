@@ -7,6 +7,7 @@ namespace Systems.Gameplay
     public struct PlayerInputData : IInputComponentData
     {
         public float2 move;
+        public float2 look;
         public InputEvent jump;
     }
 }

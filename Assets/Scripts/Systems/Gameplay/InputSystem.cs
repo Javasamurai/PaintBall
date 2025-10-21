@@ -23,10 +23,16 @@ namespace Systems.Gameplay
         protected override void OnUpdate()
         {
             var playerMove = inputActions.Player.Move.ReadValue<Vector2>();
+            var playerLook = inputActions.Player.Look.ReadValue<Vector2>();
             
-            foreach (RefRW<PlayerInputData> inputData in SystemAPI.Query<RefRW<PlayerInputData>>().WithAll<GhostOwnerIsLocal>())
+            foreach (RefRW<PlayerInputData> inputData in SystemAPI.Query<RefRW<PlayerInputData>>().WithAny<GhostOwnerIsLocal>())
             {
                 inputData.ValueRW.move = playerMove;
+                inputData.ValueRW.look = playerLook;
+                if (inputActions.Player.Jump.triggered)
+                {
+                    inputData.ValueRW.jump.Set();
+                }
             }
         }
     }
