@@ -42,43 +42,39 @@ namespace Systems
             foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClientTag>().WithEntityAccess())
             {
                 commandBuffer.AddComponent<InitializedClientTag>(entity);
-                SpawnEntity(commandBuffer, id.ValueRO.Value);
                 UnityEngine.Debug.Log($"Server initialized client {id.ValueRO.Value}");
             }
 
 
             commandBuffer.Playback(EntityManager);
-            commandBuffer.Dispose();
         }
 
-        private void SpawnEntity(EntityCommandBuffer commandBuffer, int networkID)
-        {
-            foreach (var (receive, command, entity) in SystemAPI
-                         .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<SpawnPlayerRPCCommand>>().WithEntityAccess())
-            {
-                if (SystemAPI.TryGetSingleton<SpawnerData>(out var spawnData))
-                {
-                    var playerEntity = commandBuffer.Instantiate(spawnData.PlayerPrefab);
-
-                    commandBuffer.SetComponent(playerEntity, new LocalTransform()
-                    {
-                        Position = new float3(100, 0, 100f),
-                        Rotation = quaternion.identity,
-                        Scale = 1f
-                    });
-                    commandBuffer.SetComponent(playerEntity, new GhostOwner()
-                    {
-                        NetworkId = networkID
-                    });
-                    commandBuffer.AddComponent<NetworkStreamInGame>(receive.ValueRO.SourceConnection);
-
-                    // Add to the buffer
-                    commandBuffer.AppendToBuffer(receive.ValueRO.SourceConnection,
-                        new LinkedEntityGroup { Value = playerEntity });
-                    commandBuffer.DestroyEntity(entity);
-                }
-            }
-        }
+        // private void SpawnEntity(EntityCommandBuffer commandBuffer, int networkID)
+        // {
+        //     {
+        //         if (SystemAPI.TryGetSingleton<SpawnerData>(out var spawnData))
+        //         {
+        //             var playerEntity = commandBuffer.Instantiate(spawnData.PlayerPrefab);
+        //
+        //             commandBuffer.SetComponent(playerEntity, new LocalTransform()
+        //             {
+        //                 Position = new float3(100, 0, 100f),
+        //                 Rotation = quaternion.identity,
+        //                 Scale = 1f
+        //             });
+        //             commandBuffer.SetComponent(playerEntity, new GhostOwner()
+        //             {
+        //                 NetworkId = networkID
+        //             });
+        //             commandBuffer.AddComponent<NetworkStreamInGame>(receive.ValueRO.SourceConnection);
+        //
+        //             // Add to the buffer
+        //             commandBuffer.AppendToBuffer(receive.ValueRO.SourceConnection,
+        //                 new LinkedEntityGroup { Value = playerEntity });
+        //             commandBuffer.DestroyEntity(entity);
+        //         }
+        //     }
+        // }
 
         public void SendRPC(string text, World world, Entity clientEntity)
         {

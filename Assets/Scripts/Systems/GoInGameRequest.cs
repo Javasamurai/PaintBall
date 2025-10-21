@@ -4,16 +4,9 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Burst;
 
-namespace Unity.Multiplayer.Center.NetcodeForEntitiesSetup
+namespace Systems
 {
-    /// <summary>
-    /// This allows sending RPCs between a standalone build and the editor for testing purposes in the event when you
-    /// finish this example.
-    /// you want to connect a server-client standalone build to a client configured editor instance.
-    /// INPUT: <see cref="RpcCollection"/> collectoin of all the rpcs.
-    /// OUTPUT: <see cref="RpcCollection"/> collection of all the rpcs with enabled assembly list.
-    /// </summary>
-    // [BurstCompile]
+    [BurstCompile]
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     [CreateAfter(typeof(RpcSystem))]
@@ -25,7 +18,6 @@ namespace Unity.Multiplayer.Center.NetcodeForEntitiesSetup
         /// <param name="state">The state.</param>
         public void OnCreate(ref SystemState state)
         {
-            Debug.Log("Setting RpcSystem.DynamicAssemblyList to true");
             SystemAPI.GetSingletonRW<RpcCollection>().ValueRW.DynamicAssemblyList = true;
             state.Enabled = false;
         }
@@ -51,7 +43,7 @@ namespace Unity.Multiplayer.Center.NetcodeForEntitiesSetup
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<CubeSpawner>();
+            state.RequireForUpdate<SpawnerComponent>();
             var builder = new EntityQueryBuilder(Allocator.Temp).WithAll<NetworkId>().WithNone<NetworkStreamInGame>();
             state.RequireForUpdate(state.GetEntityQuery(builder));
         }
@@ -78,11 +70,6 @@ namespace Unity.Multiplayer.Center.NetcodeForEntitiesSetup
         }
     }
     
-    /// <summary>
-    /// When the server receives a go in game request, go in game and delete request.
-    /// INPUT: <see cref="GoInGameRequest"/> request.
-    /// OUTPUT: created entity with a <see cref="GhostOwner"/> component and a <see cref="LinkedEntityGroup"/> component.
-    /// </summary>
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     public partial struct GoInGameServerSystem : ISystem 
     {
@@ -95,7 +82,7 @@ namespace Unity.Multiplayer.Center.NetcodeForEntitiesSetup
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<CubeSpawner>();
+            state.RequireForUpdate<SpawnerComponent>();
             var builder = new EntityQueryBuilder(Allocator.Temp)
                 .WithAll<GoInGameRequest>()
                 .WithAll<ReceiveRpcCommandRequest>();
@@ -103,14 +90,10 @@ namespace Unity.Multiplayer.Center.NetcodeForEntitiesSetup
             networkIdFromEntity = state.GetComponentLookup<NetworkId>(true);
         }
 
-        /// <summary>
-        /// Instantiates a player prefab for the client that sent the GoInGameRequest and destroys the request.
-        /// </summary>
-        /// <param name="state">The state</param>
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var prefab = SystemAPI.GetSingleton<CubeSpawner>().Cube;
+            var prefab = SystemAPI.GetSingleton<SpawnerComponent>().PlayerPrefab;
             state.EntityManager.GetName(prefab, out var prefabName);
             var worldName = state.WorldUnmanaged.Name;
 
@@ -123,12 +106,10 @@ namespace Unity.Multiplayer.Center.NetcodeForEntitiesSetup
                 commandBuffer.AddComponent<NetworkStreamInGame>(reqSrc.ValueRO.SourceConnection);
                 var networkId = networkIdFromEntity[reqSrc.ValueRO.SourceConnection];
 
-                UnityEngine.Debug.Log($"############ '{worldName}' setting connection '{networkId.Value}' to in game, spawning a Ghost '{prefabName}' for them!");
-
                 var player = commandBuffer.Instantiate(prefab);
                 commandBuffer.SetComponent(player, new GhostOwner {NetworkId = networkId.Value});
 
-                // Add the player to the linked entity group so it is destroyed automatically on disconnect
+                // This syncs player entity after sync/desyn
                 commandBuffer.AppendToBuffer(reqSrc.ValueRO.SourceConnection, new LinkedEntityGroup {Value = player});
 
                 commandBuffer.DestroyEntity(reqEntity);

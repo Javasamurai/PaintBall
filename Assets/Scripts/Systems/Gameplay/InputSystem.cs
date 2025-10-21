@@ -24,18 +24,10 @@ namespace Systems.Gameplay
         {
             var playerMove = inputActions.Player.Move.ReadValue<Vector2>();
             
-            Debug.Log($"Local player ghost count");
             foreach (RefRW<PlayerInputData> inputData in SystemAPI.Query<RefRW<PlayerInputData>>().WithAll<GhostOwnerIsLocal>())
             {
                 inputData.ValueRW.move = playerMove;
             }
-            
-            int count = SystemAPI.QueryBuilder()
-                .WithAll<PlayerInputData, GhostOwnerIsLocal>()
-                .Build()
-                .CalculateEntityCount();
-
-            Debug.Log($"Local player ghost count: {count}");
         }
     }
 }

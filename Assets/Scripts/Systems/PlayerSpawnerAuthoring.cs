@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Systems
 {
-    public struct SpawnerData : IComponentData
+    public struct SpawnerComponent : IComponentData
     {
         public Entity PlayerPrefab;
     }
@@ -21,7 +21,7 @@ namespace Systems
                 if (authoring.playerPrefab != null)
                 {
                     var entity=  GetEntity(TransformUsageFlags.Dynamic);
-                    AddComponent(entity, new SpawnerData
+                    AddComponent(entity, new SpawnerComponent
                     {
                         PlayerPrefab = GetEntity(authoring.playerPrefab, TransformUsageFlags.Dynamic)
                     });

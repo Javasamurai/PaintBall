@@ -33,14 +33,7 @@ namespace Systems
                 Debug.Log($"Client received RPC from server {entity.Index}: {command.ValueRO.message}");
                 commandBuffer.DestroyEntity(entity);
             }
-            
-            if (Game.IsReady && Game.GetService<PlayerServices>().CanSpawn && !Game.GetService<PlayerServices>().IsSpawned)
-            {
-                SendSpawnPlayerRPC(Game.Instance.ClientWorld);
-                Game.GetService<PlayerServices>().SpawnPlayer();
-            }
             commandBuffer.Playback(EntityManager);
-            commandBuffer.Dispose();    
         }
 
         public void SendRPC(string text, World world)
@@ -56,15 +49,6 @@ namespace Systems
                 message = text
             };
             world.EntityManager.SetComponentData(entity, rpcCommand);
-        }
-        
-        private void SendSpawnPlayerRPC(World world)
-        {
-            if (!world.IsCreated)
-            {
-                Debug.Log("Cannot send Spawn Player RPC: world not created.");
-            }
-            world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(SpawnPlayerRPCCommand));
         }
     }
 }
