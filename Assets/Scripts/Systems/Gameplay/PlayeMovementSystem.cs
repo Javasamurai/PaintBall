@@ -43,17 +43,17 @@ namespace Systems.Gameplay
             float3 direction = new float3(inputData.move.x, 0, inputData.move.y);
             float3 movement = direction * playerData.MoveSpeed * DeltaTime;
             float2 look = inputData.look;
-
-            float deltaTimeMultiplier = 1;
-
-            // _cinemachineTargetPitch += _input.look.y * RotationSpeed * deltaTimeMultiplier;
-            var rotationVelocity = look.x * playerData.LookSensitivity * DeltaTime;
-            // _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-            // CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
-            
-            transform.Rotation = math.mul(transform.Rotation, quaternion.RotateY(rotationVelocity));
             var localMove = math.mul(transform.Rotation, new float3(movement.x, 0, movement.z));
+
+            var rotationVelocityX = look.x * playerData.LookSensitivity * DeltaTime;
+            var rotationVelocityY = look.y * playerData.LookSensitivity * DeltaTime;
+            
+            transform.Rotation = math.mul(transform.Rotation, quaternion.RotateY(rotationVelocityX));
+            
             transform.Position += localMove;
+            
+            var clampedRotation = math.clamp(rotationVelocityY, -0.707f, 0.707f);
+            transform.Rotation = quaternion.RotateZ(clampedRotation);
         }
     }
 }

@@ -36,9 +36,12 @@ namespace Systems.Gameplay
                 groundLayer = authoring.groundLayer
             });
             AddComponent<PlayerInputData>(entity);
-            AddComponent<HealthComponent>(entity);
-            
-            Debug.Log("Baked player");
+            AddComponent(entity, new HealthComponent
+            {
+                CurrentHealth = 100,
+                MaxHealth = 100,
+                IsAlive = true
+            });
         }
     }
 }

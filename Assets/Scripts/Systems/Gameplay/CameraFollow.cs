@@ -1,3 +1,4 @@
+using System;
 using Cinemachine;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -31,6 +32,13 @@ namespace Systems.Gameplay
                 }
             }
         }
+    }
+
+
+    public struct CameraFollowComponent : IComponentData
+    {
+        private float cinemachineTargetPitch;
+        private float rotationVelocity;
     }
 
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]

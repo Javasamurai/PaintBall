@@ -5,8 +5,10 @@ namespace Systems.Gameplay
 {
     public struct HealthComponent : IComponentData
     {
+        [GhostField]
         public int CurrentHealth;
         public int MaxHealth;
+        [GhostField]
         public bool IsAlive;
     }
     
@@ -20,7 +22,7 @@ namespace Systems.Gameplay
 
         protected override void OnUpdate()
         {
-            foreach (var (health, entity) in SystemAPI.Query<RefRW<HealthComponent>>().WithEntityAccess())
+            foreach (var health in SystemAPI.Query<RefRW<HealthComponent>>())
             {
                 if (health.ValueRW.CurrentHealth <= 0)
                 {

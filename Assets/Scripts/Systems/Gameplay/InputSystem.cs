@@ -33,15 +33,29 @@ namespace Systems.Gameplay
                 {
                     inputData.ValueRW.jump.Set();
                 }
+
+                inputData.ValueRW.sprint = default;
                 if (inputActions.Player.Sprint.triggered)
                 {
                     inputData.ValueRW.sprint.Set();
                 }
 
+                inputData.ValueRW.shoot = default;
                 if (inputActions.Player.Attack.triggered)
                 {
+                    Debug.Log("Player shooting!");
                     inputData.ValueRW.shoot.Set();
                 }
+            }
+        }
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            if (inputActions != null)
+            {
+                inputActions.Disable();
+                inputActions.Dispose();
+                inputActions = null;
             }
         }
     }

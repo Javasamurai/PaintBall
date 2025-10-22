@@ -4,6 +4,7 @@ using Unity.Transforms;
 
 namespace Systems.Gameplay
 {
+    [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     public partial class SpawnPointSystem : SystemBase
     {
         protected override void OnCreate()
@@ -16,7 +17,7 @@ namespace Systems.Gameplay
         {
             var commandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
             
-            foreach (var (player, transform, entity) in SystemAPI.Query<RefRO<PlayerData>, RefRO<LocalTransform>>().WithNone<SpawnPointTag>().WithEntityAccess())
+            foreach (var (transform, entity) in SystemAPI.Query<RefRW<LocalTransform>>().WithNone<SpawnPointTag>().WithAll<PlayerData>().WithEntityAccess())
             {
                 foreach (var ( s, t, e) in SystemAPI.Query<RefRO<SpawnPointComponent>, RefRO<LocalTransform>>().WithEntityAccess())
                 {
@@ -26,12 +27,7 @@ namespace Systems.Gameplay
                         {
                             occupied = true
                         });
-                        commandBuffer.SetComponent(entity, new LocalTransform()
-                        {
-                            Position = t.ValueRO.Position,
-                            Rotation = quaternion.identity,
-                            Scale = 1f
-                        });
+                        transform.ValueRW.Position = t.ValueRO.Position;
                         commandBuffer.AddComponent<SpawnPointTag>(entity);
                         break;
                     }

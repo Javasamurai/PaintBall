@@ -27,7 +27,6 @@ namespace UI
         }
         public void SetHealth(float health)
         {
-            Debug.Log($"Setting health to {health}");
             healthBarImage.fillAmount = health / 100f;
 
             switch (health)
@@ -46,7 +45,6 @@ namespace UI
 
         public void SetMaxHealth(float maxHealth)
         {
-            Debug.Log($"Setting max health to {maxHealth}");
             healthBarImage.fillAmount = maxHealth / 100f;
         }
     }

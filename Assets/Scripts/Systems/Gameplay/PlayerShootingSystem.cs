@@ -1,14 +1,17 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Physics;
+using Unity.Physics.Systems;
 using Unity.Transforms;
+using UnityEngine;
+using RaycastHit = Unity.Physics.RaycastHit;
 
 namespace Systems.Gameplay
 {
+    [UpdateAfter(typeof(BuildPhysicsWorld)), UpdateBefore(typeof(EndFixedStepSimulationEntityCommandBufferSystem))]
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [DisableAutoCreation]
-    [UpdateBefore(typeof(EndFixedStepSimulationEntityCommandBufferSystem))]
+    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
     public partial struct PlayerShootingSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
@@ -19,30 +22,46 @@ namespace Systems.Gameplay
 
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (playerData, inputData, transform) in SystemAPI.Query<RefRO<PlayerData>, RefRW<PlayerInputData>, RefRO<LocalTransform>>())
+            var physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld;
+            foreach (var (player, inputData, transform) in SystemAPI.Query<RefRW<PlayerData>, RefRW<PlayerInputData>, RefRO<LocalTransform>>())
             {
                 if (inputData.ValueRO.shoot.IsSet)
                 {
-                    inputData.ValueRW.shoot = default;
-                    
                     RaycastHit hit;
-                    var physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld;
                     var rayOrigin = transform.ValueRO.Position + new float3(0, 1.5f, 0);
                     var rayDirection = transform.ValueRO.Forward();
+                    
+                    // TODO: Move this to a config variable,
+                    var filter = new CollisionFilter
+                    {
+                        BelongsTo = (uint)1 << 1,
+                        CollidesWith = (uint) 1 << 6 | (uint) 1 << 1,
+                        GroupIndex = 0
+                    };
                     var raycastInput = new RaycastInput
                     {
                         Start = rayOrigin,
-                        End = rayOrigin + rayDirection * 100f // TODO: Move this to a config variable
+                        End = rayOrigin + rayDirection * 100f,
+                        Filter = filter
                     };
+                    Debug.DrawRay(rayOrigin, rayDirection * 100f, Color.red, 0.1f);
+
                     if (physicsWorld.CastRay(raycastInput, out hit))
                     {
                         var hitEntity = hit.Entity;
-
-                        if (SystemAPI.HasComponent<HealthComponent>(hitEntity))
+                        if (SystemAPI.HasComponent<GhostOwnerIsLocal>(hitEntity))
                         {
-                            var health = SystemAPI.GetComponentRW<HealthComponent>(hitEntity);
-                            health.ValueRW.CurrentHealth -= 10;
-                            UnityEngine.Debug.Log($"Player {playerData.ValueRO} shot!");
+                            continue;
+                        }
+                        if (!SystemAPI.HasComponent<HealthComponent>(hitEntity))
+                        {
+                            continue;
+                        }
+                        var hitHealth = SystemAPI.GetComponent<HealthComponent>(hitEntity);
+                        if (hitHealth.IsAlive)
+                        {
+                            hitHealth.CurrentHealth = math.max(0, hitHealth.CurrentHealth - 10);
+                            state.EntityManager.SetComponentData(hitEntity, hitHealth);
                         }
                     }
                 }

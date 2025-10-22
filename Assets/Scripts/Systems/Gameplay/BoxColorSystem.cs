@@ -27,7 +27,7 @@ namespace Systems.Gameplay
                 {
                     color = new float4(0f, 1f, 0f, 1f);
                 }
-                else if (healthComponent.ValueRO.CurrentHealth <= 50 && healthComponent.ValueRO.CurrentHealth > 0)
+                else if (healthComponent.ValueRO.CurrentHealth <= 50 && healthComponent.ValueRO.CurrentHealth > 30)
                 {
                     color = new float4(1f, 1f, 0f, 1f);
                 }
