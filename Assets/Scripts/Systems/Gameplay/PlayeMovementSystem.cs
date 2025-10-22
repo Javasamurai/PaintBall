@@ -42,18 +42,18 @@ namespace Systems.Gameplay
         {
             float3 direction = new float3(inputData.move.x, 0, inputData.move.y);
             float3 movement = direction * playerData.MoveSpeed * DeltaTime;
-            float2 look = inputData.look;
-            var localMove = math.mul(transform.Rotation, new float3(movement.x, 0, movement.z));
+            float3 localMove = math.mul(transform.Rotation, movement);
 
-            var rotationVelocityX = look.x * playerData.LookSensitivity * DeltaTime;
-            var rotationVelocityY = look.y * playerData.LookSensitivity * DeltaTime;
-            
-            transform.Rotation = math.mul(transform.Rotation, quaternion.RotateY(rotationVelocityX));
-            
+            // Horizontal rotation 
+            float yaw = inputData.look.x * playerData.LookSensitivity * DeltaTime;
+            quaternion yawRotation = quaternion.RotateY(yaw);
+
+            // Vertical rotation
+            float pitch = inputData.look.y * playerData.LookSensitivity * DeltaTime;
+            pitch = math.clamp(pitch, -0.7f, 0.7f);
+            quaternion pitchRotation = quaternion.RotateX(pitch);
+            transform.Rotation = math.mul(yawRotation, math.mul(transform.Rotation, pitchRotation));
             transform.Position += localMove;
-            
-            var clampedRotation = math.clamp(rotationVelocityY, -0.707f, 0.707f);
-            transform.Rotation = quaternion.RotateZ(clampedRotation);
         }
     }
 }

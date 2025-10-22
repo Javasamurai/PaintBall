@@ -14,6 +14,7 @@ namespace Systems
     public struct InitializedClientTag : IComponentData
     {
     }
+    
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     public partial class ServerRPCSystem : SystemBase
     {
@@ -46,33 +47,6 @@ namespace Systems
 
             commandBuffer.Playback(EntityManager);
         }
-
-        // private void SpawnEntity(EntityCommandBuffer commandBuffer, int networkID)
-        // {
-        //     {
-        //         if (SystemAPI.TryGetSingleton<SpawnerData>(out var spawnData))
-        //         {
-        //             var playerEntity = commandBuffer.Instantiate(spawnData.PlayerPrefab);
-        //
-        //             commandBuffer.SetComponent(playerEntity, new LocalTransform()
-        //             {
-        //                 Position = new float3(100, 0, 100f),
-        //                 Rotation = quaternion.identity,
-        //                 Scale = 1f
-        //             });
-        //             commandBuffer.SetComponent(playerEntity, new GhostOwner()
-        //             {
-        //                 NetworkId = networkID
-        //             });
-        //             commandBuffer.AddComponent<NetworkStreamInGame>(receive.ValueRO.SourceConnection);
-        //
-        //             // Add to the buffer
-        //             commandBuffer.AppendToBuffer(receive.ValueRO.SourceConnection,
-        //                 new LinkedEntityGroup { Value = playerEntity });
-        //             commandBuffer.DestroyEntity(entity);
-        //         }
-        //     }
-        // }
 
         public void SendRPC(string text, World world, Entity clientEntity)
         {

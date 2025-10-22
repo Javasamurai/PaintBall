@@ -22,13 +22,20 @@ namespace Systems.Gameplay
 
         protected override void OnUpdate()
         {
-            foreach (var health in SystemAPI.Query<RefRW<HealthComponent>>())
+            var commandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+            foreach (var (health, e) in SystemAPI.Query<RefRW<HealthComponent>>().WithEntityAccess())
             {
                 if (health.ValueRW.CurrentHealth <= 0)
                 {
                     health.ValueRW.IsAlive = false;
+                    // remove the spawn point tag
+                    if (SystemAPI.HasComponent<SpawnPointTag>(e))
+                    {
+                        commandBuffer.RemoveComponent<SpawnPointTag>(e);
+                    }
                 }
             }
+            commandBuffer.Playback(EntityManager);
         }
     }
 }

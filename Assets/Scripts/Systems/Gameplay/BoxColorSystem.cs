@@ -37,6 +37,7 @@ namespace Systems.Gameplay
                 }
                 baseColor.ValueRW.Value = color;
             }
+            entityCommandBuffer.Playback(EntityManager);
         }
     }
 }

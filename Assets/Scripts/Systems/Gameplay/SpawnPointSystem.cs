@@ -4,6 +4,10 @@ using Unity.Transforms;
 
 namespace Systems.Gameplay
 {
+    public struct RespawnComponent : IComponentData
+    {
+        public float RespawnTime;
+    }
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     public partial class SpawnPointSystem : SystemBase
     {
@@ -21,16 +25,18 @@ namespace Systems.Gameplay
             {
                 foreach (var ( s, t, e) in SystemAPI.Query<RefRO<SpawnPointComponent>, RefRO<LocalTransform>>().WithEntityAccess())
                 {
-                    if (!s.ValueRO.occupied)
-                    {
+                    // if (!s.ValueRO.occupied)
+                    // {
                         commandBuffer.SetComponent(e, new SpawnPointComponent
                         {
-                            occupied = true
+                            occupied = true,
+                            RespawnTime = 5f,
+                            spawned = true
                         });
                         transform.ValueRW.Position = t.ValueRO.Position;
                         commandBuffer.AddComponent<SpawnPointTag>(entity);
                         break;
-                    }
+                    // }
                 }
             }
             commandBuffer.Playback(EntityManager);

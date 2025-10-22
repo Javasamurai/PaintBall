@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -16,6 +17,7 @@ namespace Systems.Gameplay
     {
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<EndFixedStepSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<PhysicsWorldSingleton>();
             state.RequireForUpdate<PlayerInputData>();
         }
@@ -23,6 +25,7 @@ namespace Systems.Gameplay
         public void OnUpdate(ref SystemState state)
         {
             var physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld;
+            var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
             foreach (var (player, inputData, transform) in SystemAPI.Query<RefRW<PlayerData>, RefRW<PlayerInputData>, RefRO<LocalTransform>>())
             {
                 if (inputData.ValueRO.shoot.IsSet)
@@ -62,6 +65,13 @@ namespace Systems.Gameplay
                         {
                             hitHealth.CurrentHealth = math.max(0, hitHealth.CurrentHealth - 10);
                             state.EntityManager.SetComponentData(hitEntity, hitHealth);
+                        }
+                        if (hitHealth.CurrentHealth <= 0)
+                        {
+                            if (SystemAPI.HasComponent<BoxComponent>(hitEntity))
+                            {
+                                commandBuffer.DestroyEntity(hitEntity);
+                            }
                         }
                     }
                 }

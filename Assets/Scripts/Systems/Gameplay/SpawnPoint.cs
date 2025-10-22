@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 
 namespace Systems.Gameplay
@@ -6,6 +7,8 @@ namespace Systems.Gameplay
     public struct SpawnPointComponent : IComponentData
     {
         public bool occupied;
+        public float RespawnTime;
+        public bool spawned;
     }
     
     public struct SpawnPointTag : IComponentData
