@@ -113,7 +113,7 @@ namespace Systems
 
                 commandBuffer.SetComponent(player, new LocalTransform()
                 {
-                    Position = new float3(100, 0, 100f),
+                    Position = new float3(0, 10, 0),
                     Rotation = quaternion.identity,
                     Scale = 1f
                 });

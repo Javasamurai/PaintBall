@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Rendering;
 using UnityEngine;
 
 namespace Systems.Gameplay
@@ -25,7 +26,13 @@ namespace Systems.Gameplay
                 MaxSpeed = authoring.MaxSpeed,
                 Radius = authoring.Radius
             });
-            AddComponent(entity, new HealthComponent());
+            AddComponent(entity, new HealthComponent()
+            {
+                CurrentHealth = 100,
+                MaxHealth = 100,
+                IsAlive = true
+            });
+            AddComponent(entity, new URPMaterialPropertyBaseColor());
         }
     }
 }

@@ -26,7 +26,6 @@ namespace Systems.Gameplay
                     cameraFollowSystem.cameraTarget = cameraTarget;
                     cameraFollowSystem.offset = new float3(cameraOffset.x, cameraOffset.y, cameraOffset.z);
                     virtualCamera.Follow = cameraTarget;
-                    // virtualCamera.LookAt = cameraTarget;
                     var simulationSystemGroup = world.GetExistingSystemManaged<SimulationSystemGroup>();
                     simulationSystemGroup.AddSystemToUpdateList(cameraFollowSystem);
                 }

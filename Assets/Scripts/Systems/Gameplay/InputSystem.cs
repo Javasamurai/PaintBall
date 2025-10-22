@@ -33,6 +33,15 @@ namespace Systems.Gameplay
                 {
                     inputData.ValueRW.jump.Set();
                 }
+                if (inputActions.Player.Sprint.triggered)
+                {
+                    inputData.ValueRW.sprint.Set();
+                }
+
+                if (inputActions.Player.Attack.triggered)
+                {
+                    inputData.ValueRW.shoot.Set();
+                }
             }
         }
     }

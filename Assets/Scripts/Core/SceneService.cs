@@ -51,7 +51,6 @@ namespace Core
         
         private void LoadSubScenes()
         {
-            
             SubScene[] subScenes = Object.FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
             World clientWorld = Game.Instance.ClientWorld;
@@ -63,7 +62,7 @@ namespace Core
                 {
                     SceneSystem.LoadParameters loadParameters = new SceneSystem.LoadParameters
                     {
-                        Flags = SceneLoadFlags.BlockOnImport
+                        Flags = SceneLoadFlags.BlockOnStreamIn
                     };
                     var sceneEntity = SceneSystem.LoadSceneAsync(serverWorld.Unmanaged, new Unity.Entities.Hash128(subScene.SceneGUID.Value), loadParameters);
                     while (!SceneSystem.IsSceneLoaded(serverWorld.Unmanaged, sceneEntity))

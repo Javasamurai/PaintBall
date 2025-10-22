@@ -1,4 +1,6 @@
 using Unity.Entities;
+using Unity.Physics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Systems.Gameplay
@@ -8,12 +10,15 @@ namespace Systems.Gameplay
         public float MoveSpeed;
         public float SprintSpeed;
         public float LookSensitivity;
+        public uint groundLayer;
     }
 
     public class Player : MonoBehaviour
     {
         [SerializeField] public float speed;
         [SerializeField] public float Look;
+        [SerializeField] public float Sprint;
+        [SerializeField] public uint groundLayer = 1;
     }
 
     public class PlayerBaker : Baker<Player>
@@ -26,10 +31,14 @@ namespace Systems.Gameplay
             AddComponent(entity, new PlayerData
             {
                 MoveSpeed = authoring.speed,
-                LookSensitivity = authoring.Look
+                LookSensitivity = authoring.Look,
+                SprintSpeed = authoring.Sprint,
+                groundLayer = authoring.groundLayer
             });
             AddComponent<PlayerInputData>(entity);
             AddComponent<HealthComponent>(entity);
+            
+            Debug.Log("Baked player");
         }
     }
 }

@@ -2,11 +2,15 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 
 namespace Systems.Gameplay
 {
+    [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateBefore(typeof(EndFixedStepSimulationEntityCommandBufferSystem))]
     public partial struct PlayerMovementSystem : ISystem
     {
         [BurstCompile]
@@ -44,13 +48,9 @@ namespace Systems.Gameplay
 
             // _cinemachineTargetPitch += _input.look.y * RotationSpeed * deltaTimeMultiplier;
             var rotationVelocity = look.x * playerData.LookSensitivity * DeltaTime;
-
-            // clamp our pitch rotation
             // _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
-            // Update Cinemachine camera target pitch
             // CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
-            // var quaternion = Quaternion.Euler(look.y * playerData.LookSensitivity * DeltaTime, look.x * playerData.LookSensitivity * DeltaTime, 0);
+            
             transform.Rotation = math.mul(transform.Rotation, quaternion.RotateY(rotationVelocity));
             var localMove = math.mul(transform.Rotation, new float3(movement.x, 0, movement.z));
             transform.Position += localMove;

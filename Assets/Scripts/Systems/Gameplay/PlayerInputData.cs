@@ -9,5 +9,7 @@ namespace Systems.Gameplay
         public float2 move;
         public float2 look;
         public InputEvent jump;
+        public InputEvent sprint;
+        public InputEvent shoot;
     }
 }

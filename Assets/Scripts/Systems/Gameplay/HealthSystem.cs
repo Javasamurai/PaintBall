@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.NetCode;
 
 namespace Systems.Gameplay
 {
@@ -14,11 +15,18 @@ namespace Systems.Gameplay
         protected override void OnCreate()
         {
             base.OnCreate();
+            RequireForUpdate(GetEntityQuery(ComponentType.ReadOnly<HealthComponent>(), ComponentType.ReadOnly<GhostOwnerIsLocal>()));
         }
 
         protected override void OnUpdate()
         {
-            // Update health logic
+            foreach (var (health, entity) in SystemAPI.Query<RefRW<HealthComponent>>().WithEntityAccess())
+            {
+                if (health.ValueRW.CurrentHealth <= 0)
+                {
+                    health.ValueRW.IsAlive = false;
+                }
+            }
         }
     }
 }
