@@ -450,7 +450,7 @@ MonoBehaviour:
   DefaultGhostMode: 2
   SupportedGhostModes: 3
   OptimizationMode: 0
-  Importance: 50
+  Importance: 100
   MaxSendRate: 0
   prefabId: 2b0197f34139c46f3a2ea48c00313dc8
   HasOwner: 1
@@ -497,8 +497,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   Look: 1
-  Sprint: 0
+  Sprint: 5
   groundLayer: 5
+  playerConfig: {fileID: 11400000, guid: 54ee8f9cbc6ac433bb4e18e3c7a5b1ac, type: 2}
 --- !u!136 &7999024185011870277
 CapsuleCollider:
   m_ObjectHideFlags: 0

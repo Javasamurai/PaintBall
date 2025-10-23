@@ -63,7 +63,8 @@ namespace Systems.Gameplay
                         var hitHealth = SystemAPI.GetComponent<HealthComponent>(hitEntity);
                         if (hitHealth.IsAlive)
                         {
-                            hitHealth.CurrentHealth = (ushort)math.max(0, hitHealth.CurrentHealth - 31);
+                            // Choosing 34 as the damage value for the hit
+                            hitHealth.CurrentHealth = (ushort)math.max(0, hitHealth.CurrentHealth - 34);
                             state.EntityManager.SetComponentData(hitEntity, hitHealth);
                             
                             Debug.Log(hitHealth.CurrentHealth);
@@ -71,11 +72,10 @@ namespace Systems.Gameplay
                             {
                                 if (SystemAPI.HasComponent<BoxComponent>(hitEntity))
                                 {
-                                    commandBuffer.SetComponent(hitEntity, new BoxComponent
+                                    state.EntityManager.SetComponentData(hitEntity, new BoxComponent
                                     {
                                         toDestroy = true
                                     });
-                                    commandBuffer.DestroyEntity(hitEntity);
                                 }
                             }
                         }

@@ -1,4 +1,5 @@
 using System;
+using DefaultNamespace;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Scenes;
@@ -23,6 +24,7 @@ namespace Core
 
         public void LoadSceneAsync(string sceneName, bool additive = true, Action<Scene> onComplete = null)
         {
+            ShowLoadingScreen();
             AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneName, additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
 
             asyncOperation.completed += operation =>
@@ -33,22 +35,35 @@ namespace Core
                     if (scene.IsValid())
                     {
                         onComplete?.Invoke(scene);
+                        HideLoadingScreen();
                     }
                     else
                     {
                         onComplete?.Invoke(default);
+                        HideLoadingScreen();
                     }
                 }
                 else
                 {
                     Debug.LogError($"Failed to load scene {sceneName}");
                     onComplete?.Invoke(default);
+                    HideLoadingScreen();
                 }
             };
             // Load sub-scenes if any, because ECS follow sub-scene and bake into the server world, in the background
             LoadSubScenes();
         }
+
+        private void ShowLoadingScreen()
+        {
+            SceneManager.LoadScene(Utils.LOADING_SCENE, LoadSceneMode.Additive);
+        }
         
+        private void HideLoadingScreen()
+        {
+            SceneManager.UnloadSceneAsync(Utils.LOADING_SCENE);
+        }
+
         private void LoadSubScenes()
         {
             SubScene[] subScenes = Object.FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);

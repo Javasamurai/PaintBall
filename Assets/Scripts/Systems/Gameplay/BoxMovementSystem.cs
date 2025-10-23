@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -16,12 +17,20 @@ namespace Systems.Gameplay
     }
     public partial class BoxMovementSystem : SystemBase
     {
+        private SystemHandle _ecbSystem;
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+            _ecbSystem = World.GetOrCreateSystem<EndFixedStepSimulationEntityCommandBufferSystem>();
+            RequireForUpdate<BoxComponent>();
+        }
         protected override void OnUpdate()
         {
             // Box movement logic
             // sinosuidal movement along the x axis
             float deltaTime = SystemAPI.Time.DeltaTime;
             float amplitude = 2f;
+            var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
             foreach (var (box, transform) in SystemAPI.Query<RefRW<BoxComponent>, RefRW<LocalTransform>>())
             {
@@ -42,6 +51,17 @@ namespace Systems.Gameplay
                 
                 transform.ValueRW.Position.x += newPosition;
             }
+            // Check if any box for destruction
+            
+            foreach (var (box, entity) in SystemAPI.Query<RefRW<BoxComponent>>().WithEntityAccess())
+            {
+                if (box.ValueRO.toDestroy)
+                {
+                    commandBuffer.DestroyEntity(entity);
+                }
+            }
+            
+            commandBuffer.Playback(EntityManager);
         }
     }
 }

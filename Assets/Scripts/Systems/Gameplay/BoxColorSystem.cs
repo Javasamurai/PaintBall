@@ -22,15 +22,15 @@ namespace Systems.Gameplay
             {
                 var color = new float4(1f, 1f, 1f, 1f);
 
-                if (healthComponent.ValueRO.CurrentHealth <= 100 && healthComponent.ValueRO.CurrentHealth > 50)
+                if (healthComponent.ValueRO.CurrentHealth <= 100 && healthComponent.ValueRO.CurrentHealth > 75)
                 {
                     color = new float4(0f, 1f, 0f, 1f);
                 }
-                else if (healthComponent.ValueRO.CurrentHealth <= 50 && healthComponent.ValueRO.CurrentHealth > 30)
+                else if (healthComponent.ValueRO.CurrentHealth <= 75)
                 {
                     color = new float4(1f, 1f, 0f, 1f);
                 }
-                else if (healthComponent.ValueRO.CurrentHealth <= 0)
+                else if (healthComponent.ValueRO.CurrentHealth <= 50)
                 {
                     color = new float4(1f, 0f, 0f, 1f);
                 }

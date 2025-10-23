@@ -1,3 +1,4 @@
+using DefaultNamespace;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Physics;
@@ -17,10 +18,8 @@ namespace Systems.Gameplay
 
     public class Player : MonoBehaviour
     {
-        [SerializeField] public float speed;
-        [SerializeField] public float Look;
-        [SerializeField] public float Sprint;
-        [SerializeField] public uint groundLayer = 1;
+        [SerializeField]
+        public PlayerConfig playerConfig;
     }
 
     public class PlayerBaker : Baker<Player>
@@ -32,10 +31,10 @@ namespace Systems.Gameplay
             // Move this to a config
             AddComponent(entity, new PlayerData
             {
-                MoveSpeed = authoring.speed,
-                LookSensitivity = authoring.Look,
-                SprintSpeed = authoring.Sprint,
-                groundLayer = authoring.groundLayer
+                MoveSpeed = authoring.playerConfig.speed,
+                LookSensitivity = authoring.playerConfig.Look,
+                SprintSpeed = authoring.playerConfig.Sprint,
+                groundLayer = authoring.playerConfig.groundLayer
             });
             AddComponent<PlayerInputData>(entity);
             AddComponent(entity, new HealthComponent
@@ -44,6 +43,7 @@ namespace Systems.Gameplay
                 MaxHealth = 100,
                 IsAlive = true
             });
+            AddComponent<RespawnComponent>(entity);
         }
     }
 }

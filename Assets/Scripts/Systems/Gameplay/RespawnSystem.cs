@@ -5,6 +5,10 @@ using Unity.Transforms;
 
 namespace Systems.Gameplay
 {
+    public struct RespawnComponent : IComponentData
+    {
+        public float RespawnTime;
+    }
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     public partial class RespawnSystem : SystemBase
     {
@@ -20,25 +24,29 @@ namespace Systems.Gameplay
 
         protected override void OnUpdate()
         {
-            var entitycommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+            var entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-            foreach (var (health, spawnPoint, transform, entity) in SystemAPI.Query<RefRW<HealthComponent>, RefRW<SpawnPointComponent>, RefRW<LocalTransform>>().WithEntityAccess())
+            foreach (var (health, spawnPoint, entity) in SystemAPI.Query<RefRW<HealthComponent>, RefRW<RespawnComponent>>().WithEntityAccess())
             {
                 if (!health.ValueRO.IsAlive)
                 {
                     if (spawnPoint.ValueRO.RespawnTime <= 0f)
                     {
                         // Respawn logic
-                        spawnPoint.ValueRW.spawned = true;
                         spawnPoint.ValueRW.RespawnTime = 5f;
                         health.ValueRW.IsAlive = true;
                         health.ValueRW.CurrentHealth = health.ValueRO.MaxHealth;
-                        entitycommandBuffer.SetComponent(entity, new HealthComponent
+                        entityCommandBuffer.SetComponent(entity, new HealthComponent
                         {
                             CurrentHealth = health.ValueRO.MaxHealth,
                             MaxHealth = health.ValueRO.MaxHealth,
                             IsAlive = true
                         });
+                        // Remove the spawn point tag
+                        if (SystemAPI.HasComponent<SpawnPointTag>(entity))
+                        {
+                            entityCommandBuffer.RemoveComponent<SpawnPointTag>(entity);
+                        }
                     }
                     else if (spawnPoint.ValueRO.RespawnTime > 0f)
                     {
@@ -46,14 +54,14 @@ namespace Systems.Gameplay
                         spawnPoint.ValueRW.RespawnTime -= SystemAPI.Time.DeltaTime;
                         
                         // Move to a safe position while respawning
-                        entitycommandBuffer.SetComponent(entity, new LocalTransform
+                        entityCommandBuffer.SetComponent(entity, new LocalTransform
                         {
                             Position = new float3(1000, 1000, 1000),
                         });
                     }
-
                 }
             }
+            entityCommandBuffer.Playback(EntityManager);
         }
     }
 }

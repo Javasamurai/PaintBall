@@ -10,6 +10,7 @@ namespace DefaultNamespace
         public static readonly string SPLASH_SCENE = "Splash_Scene";
         public static readonly string MAIN_MENU_SCENE = "MainMenu_Scene";
         public static readonly string PLAYGROUND_SCENE = "Playground_Scene";
+        public static readonly string LOADING_SCENE = "Loading_Scene";
         # endregion
         
         # region EDITOR SPECIFIC
