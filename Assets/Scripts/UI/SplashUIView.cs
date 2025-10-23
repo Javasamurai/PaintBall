@@ -27,7 +27,7 @@ namespace UI
                 yield return null;
             }
             
-            if (false)
+            if (Application.isEditor)
             {
                 Game.GetService<SceneService>().LoadSceneAsync(Utils.PLAYGROUND_SCENE, true, (scene) =>
                 {

@@ -16,7 +16,7 @@ namespace Systems.Gameplay
         {
             base.OnCreate();
             EntityQueryBuilder queryBuilder = new EntityQueryBuilder(Allocator.Temp);
-            queryBuilder.WithAll<SpawnPointTag, LocalTransform, SpawnPointComponent>();
+            queryBuilder.WithAll<LocalTransform, SpawnPointComponent>();
             
             EntityQuery spawnPointQuery = GetEntityQuery(queryBuilder);
             RequireForUpdate(spawnPointQuery);

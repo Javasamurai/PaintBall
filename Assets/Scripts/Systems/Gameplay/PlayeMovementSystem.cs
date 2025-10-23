@@ -52,6 +52,8 @@ namespace Systems.Gameplay
 
             // Vertical rotation
             float pitch = inputData.look.y * playerData.LookSensitivity * DeltaTime;
+            
+            // TODO: This is still buggy
             pitch = math.clamp(pitch, -0.7f, 0.7f);
             quaternion pitchRotation = quaternion.RotateX(pitch);
             transform.Rotation = math.mul(yawRotation, math.mul(transform.Rotation, pitchRotation));

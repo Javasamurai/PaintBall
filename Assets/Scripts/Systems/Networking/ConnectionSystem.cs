@@ -3,6 +3,7 @@ using DefaultNamespace;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine;
 
 [UpdateAfter(typeof(NetworkReceiveSystemGroup))]
 [BurstCompile]
@@ -18,7 +19,7 @@ public partial struct ConnectionSystem : ISystem
         var connectionEventsForClient = SystemAPI.GetSingleton<NetworkStreamDriver>().ConnectionEventsForTick;
         foreach (var evt in connectionEventsForClient)
         {
-            UnityEngine.Debug.Log($"[{state.WorldUnmanaged.Name}] {evt.ToFixedString()}!");
+            Debug.Log($"[{state.WorldUnmanaged.Name}] {evt.ToFixedString()}!");
 
             if (evt.State == ConnectionState.State.Disconnected)
             {

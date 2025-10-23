@@ -53,9 +53,9 @@ public class UIVirtualTouchZone : OnScreenStick, IPointerDownHandler, IDragHandl
 
     public void OnDrag(PointerEventData eventData)
     {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(containerRect, eventData.position, eventData.pressEventCamera, out lastPointerPosition);
         RectTransformUtility.ScreenPointToLocalPointInRectangle(containerRect, eventData.position, eventData.pressEventCamera, out currentPointerPosition);
         Vector2 positionDelta = GetDeltaBetweenPositions(currentPointerPosition, lastPointerPosition);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(containerRect, eventData.position, eventData.pressEventCamera, out lastPointerPosition);
         Vector2 clampedPosition = ClampValuesToMagnitude(positionDelta);
         Vector2 outputPosition = ApplyInversionFilter(clampedPosition);
 

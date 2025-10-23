@@ -28,11 +28,6 @@ namespace Systems.Gameplay
                 if (health.ValueRW.CurrentHealth <= 0)
                 {
                     health.ValueRW.IsAlive = false;
-                    // remove the spawn point tag
-                    if (SystemAPI.HasComponent<SpawnPointTag>(e))
-                    {
-                        commandBuffer.RemoveComponent<SpawnPointTag>(e);
-                    }
                 }
             }
             commandBuffer.Playback(EntityManager);

@@ -44,8 +44,8 @@ namespace UI
                     startButton.interactable = true;
                 }
             });
+            ipInputField.text = Game.GetService<NetworkService>().GetLocalIPAddress();
             nameInputField.text = Utils.PLAYER_NAME.ToString();
-            ipInputField.text = Utils.IP.ToString();
         }
 
         private void OnStartButtonClicked()

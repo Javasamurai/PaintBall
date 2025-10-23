@@ -5,6 +5,7 @@ using Unity.Rendering;
 
 namespace Systems.Gameplay
 {
+    [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
     public partial class BoxColorSystem : SystemBase
     {
         protected override void OnCreate()
