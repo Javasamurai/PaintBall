@@ -10,6 +10,7 @@ namespace Systems.Gameplay
         public float MinSpeed;
         public float MaxSpeed;
         public float Radius;
+        public bool toDestroy;
         
         public float CurrentSpeed;
     }
@@ -24,6 +25,10 @@ namespace Systems.Gameplay
 
             foreach (var (box, transform) in SystemAPI.Query<RefRW<BoxComponent>, RefRW<LocalTransform>>())
             {
+                if (box.ValueRO.toDestroy)
+                {
+                    continue;
+                }
                 if (box.ValueRW.CurrentSpeed == 0)
                 {
                     uint frameSeed = (uint)UnityEngine.Random.Range(1, int.MaxValue);

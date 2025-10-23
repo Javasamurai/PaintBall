@@ -50,7 +50,6 @@ namespace UI
     [DisableAutoCreation]
     public partial class HUDUISystem : SystemBase
     {
-        private string pingText;
         public PlayerHUD PlayerHUD;
         
         protected override void OnUpdate()

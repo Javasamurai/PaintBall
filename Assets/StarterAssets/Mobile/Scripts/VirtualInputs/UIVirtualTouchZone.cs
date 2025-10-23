@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
+using UnityEngine.InputSystem.OnScreen;
 
-public class UIVirtualTouchZone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+public class UIVirtualTouchZone : OnScreenStick, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     [System.Serializable]
     public class Event : UnityEvent<Vector2> { }
@@ -18,6 +19,7 @@ public class UIVirtualTouchZone : MonoBehaviour, IPointerDownHandler, IDragHandl
     public bool invertYOutputValue;
 
     //Stored Pointer Values
+    private Vector2 lastPointerPosition;
     private Vector2 pointerDownPosition;
     private Vector2 currentPointerPosition;
 
@@ -51,16 +53,14 @@ public class UIVirtualTouchZone : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void OnDrag(PointerEventData eventData)
     {
-
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(containerRect, eventData.position, eventData.pressEventCamera, out lastPointerPosition);
         RectTransformUtility.ScreenPointToLocalPointInRectangle(containerRect, eventData.position, eventData.pressEventCamera, out currentPointerPosition);
-        
-        Vector2 positionDelta = GetDeltaBetweenPositions(pointerDownPosition, currentPointerPosition);
-
+        Vector2 positionDelta = GetDeltaBetweenPositions(currentPointerPosition, lastPointerPosition);
         Vector2 clampedPosition = ClampValuesToMagnitude(positionDelta);
-        
         Vector2 outputPosition = ApplyInversionFilter(clampedPosition);
 
         OutputPointerEventValue(outputPosition * magnitudeMultiplier);
+        SendValueToControl(outputPosition * magnitudeMultiplier);
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -69,6 +69,8 @@ public class UIVirtualTouchZone : MonoBehaviour, IPointerDownHandler, IDragHandl
         currentPointerPosition = Vector2.zero;
 
         OutputPointerEventValue(Vector2.zero);
+
+        SendValueToControl(Vector2.zero);
 
         if(handleRect)
         {

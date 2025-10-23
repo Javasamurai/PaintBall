@@ -8,6 +8,7 @@ namespace UI
 {
     public class StatsUI : UIView
     {
+        [SerializeField] TextMeshProUGUI _ipText;
         [SerializeField]
         private TextMeshProUGUI _fpsText;
         [SerializeField]
@@ -30,6 +31,15 @@ namespace UI
                     var simulationSystemGroup = world.GetExistingSystemManaged<SimulationSystemGroup>();
                     simulationSystemGroup.AddSystemToUpdateList(pingSystem);
                 }
+            }
+            if (_ipText != null)
+            {
+                var localIP = Game.GetService<NetworkService>().GetLocalIPAddress();
+                _ipText.text = $"IP: {localIP}";
+            }
+            else
+            {
+                Debug.LogWarning("IP Text is not assigned in StatsUI.");
             }
         }
 

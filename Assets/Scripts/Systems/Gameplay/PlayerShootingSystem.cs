@@ -65,16 +65,24 @@ namespace Systems.Gameplay
                         {
                             hitHealth.CurrentHealth = (ushort)math.max(0, hitHealth.CurrentHealth - 31);
                             state.EntityManager.SetComponentData(hitEntity, hitHealth);
-                        }
-                        if (hitHealth.CurrentHealth <= 0)
-                        {
-                            if (SystemAPI.HasComponent<BoxComponent>(hitEntity))
+                            
+                            Debug.Log(hitHealth.CurrentHealth);
+                            if (hitHealth.CurrentHealth <= 0)
                             {
-                                commandBuffer.DestroyEntity(hitEntity);
+                                if (SystemAPI.HasComponent<BoxComponent>(hitEntity))
+                                {
+                                    commandBuffer.SetComponent(hitEntity, new BoxComponent
+                                    {
+                                        toDestroy = true
+                                    });
+                                    commandBuffer.DestroyEntity(hitEntity);
+                                }
                             }
                         }
                     }
                 }
+                commandBuffer.Playback(state.EntityManager);
+                commandBuffer.Dispose();
             }
         }
     }

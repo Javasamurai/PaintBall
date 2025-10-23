@@ -56,8 +56,7 @@ public class UIVirtualJoystick : OnScreenStick, IPointerDownHandler, IDragHandle
         {
             UpdateHandleRectPosition(clampedPosition * joystickRange);
         }
-        
-        SendValueToControl(outputPosition);
+        SendValueToControl(outputPosition * magnitudeMultiplier);
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -68,6 +67,7 @@ public class UIVirtualJoystick : OnScreenStick, IPointerDownHandler, IDragHandle
         {
              UpdateHandleRectPosition(Vector2.zero);
         }
+        SendValueToControl(Vector2.zero);
     }
 
     private void OutputPointerEventValue(Vector2 pointerPosition)
