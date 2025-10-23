@@ -81,9 +81,9 @@ namespace Systems.Gameplay
                         }
                     }
                 }
-                commandBuffer.Playback(state.EntityManager);
-                commandBuffer.Dispose();
             }
+            commandBuffer.Playback(state.EntityManager);
+            commandBuffer.Dispose();
         }
     }
 }

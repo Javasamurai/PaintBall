@@ -24,8 +24,16 @@ namespace Core
 
         public void LoadSceneAsync(string sceneName, bool additive = true, Action<Scene> onComplete = null)
         {
-            ShowLoadingScreen();
-            AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneName, additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
+            // ShowLoadingScreen();
+            if (!additive)
+            {
+                Scene currentScene = SceneManager.GetActiveScene();
+                if (currentScene.IsValid() && currentScene.name != Utils.BOOTSTRAP_SCENE)
+                {
+                    SceneManager.UnloadSceneAsync(currentScene);
+                }
+            }
+            AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
             asyncOperation.completed += operation =>
             {
@@ -35,19 +43,19 @@ namespace Core
                     if (scene.IsValid())
                     {
                         onComplete?.Invoke(scene);
-                        HideLoadingScreen();
+                        // HideLoadingScreen();
                     }
                     else
                     {
                         onComplete?.Invoke(default);
-                        HideLoadingScreen();
+                        // HideLoadingScreen();
                     }
                 }
                 else
                 {
                     Debug.LogError($"Failed to load scene {sceneName}");
                     onComplete?.Invoke(default);
-                    HideLoadingScreen();
+                    // HideLoadingScreen();
                 }
             };
             // Load sub-scenes if any, because ECS follow sub-scene and bake into the server world, in the background
@@ -70,6 +78,11 @@ namespace Core
 
             World clientWorld = Game.Instance.ClientWorld;
             World serverWorld = Game.Instance.ServerWorld;
+            
+            if (subScenes == null || subScenes.Length == 0)
+            {
+                return;
+            }
 
             if (serverWorld != null)
             {

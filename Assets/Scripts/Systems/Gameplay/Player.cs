@@ -43,7 +43,10 @@ namespace Systems.Gameplay
                 MaxHealth = 100,
                 IsAlive = true
             });
-            AddComponent<RespawnComponent>(entity);
+            AddComponent(entity, new RespawnComponent()
+            {
+                RespawnTime = 5f
+            });
         }
     }
 }

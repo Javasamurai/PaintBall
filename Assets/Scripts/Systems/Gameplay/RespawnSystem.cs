@@ -34,8 +34,6 @@ namespace Systems.Gameplay
                     {
                         // Respawn logic
                         spawnPoint.ValueRW.RespawnTime = 5f;
-                        health.ValueRW.IsAlive = true;
-                        health.ValueRW.CurrentHealth = health.ValueRO.MaxHealth;
                         entityCommandBuffer.SetComponent(entity, new HealthComponent
                         {
                             CurrentHealth = health.ValueRO.MaxHealth,

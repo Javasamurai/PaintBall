@@ -44,6 +44,8 @@ namespace UI
                     startButton.interactable = true;
                 }
             });
+            nameInputField.text = Utils.PLAYER_NAME.ToString();
+            ipInputField.text = Utils.IP.ToString();
         }
 
         private void OnStartButtonClicked()

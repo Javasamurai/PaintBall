@@ -43,6 +43,8 @@ namespace Systems.Gameplay
             float3 direction = new float3(inputData.move.x, 0, inputData.move.y);
             float3 movement = direction * playerData.MoveSpeed * DeltaTime;
             float3 localMove = math.mul(transform.Rotation, movement);
+            
+            localMove.y = 0f; // Ensure no vertical movement
 
             // Horizontal rotation 
             float yaw = inputData.look.x * playerData.LookSensitivity * DeltaTime;

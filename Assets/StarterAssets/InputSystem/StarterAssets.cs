@@ -330,7 +330,7 @@ public partial class @StarterAssetInput: IInputActionCollection2, IDisposable
                     ""id"": ""d1d171b6-19d8-47a6-ba3a-71b6a8e7b3c0"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
-                    ""processors"": ""InvertVector2(invertX=false),StickDeadzone,ScaleVector2"",
+                    ""processors"": ""InvertVector2(invertX=false),StickDeadzone,ScaleVector2(x=5,y=5)"",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Look"",
                     ""isComposite"": false,

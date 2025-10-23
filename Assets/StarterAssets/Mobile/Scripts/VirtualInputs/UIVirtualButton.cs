@@ -11,10 +11,6 @@ public class UIVirtualButton : OnScreenControl, IPointerDownHandler, IPointerUpH
     [System.Serializable]
     public class Event : UnityEvent { }
 
-    [Header("Output")]
-    public BoolEvent buttonStateOutputEvent;
-    public Event buttonClickOutputEvent;
-
     [InputControl(layout = "Button")]
     [SerializeField]
     private string m_ControlPath;
@@ -26,29 +22,20 @@ public class UIVirtualButton : OnScreenControl, IPointerDownHandler, IPointerUpH
     }
     public void OnPointerDown(PointerEventData eventData)
     {
-        OutputButtonStateValue(true);
+        SendValueToControl(1.0f);
+        Debug.Log("OnPointerDown");
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        OutputButtonStateValue(false);
         SendValueToControl(0.0f);
+        Debug.Log("OnPointerUp");
     }
     
     public void OnPointerClick(PointerEventData eventData)
     {
-        OutputButtonClickEvent();
         SendValueToControl(1.0f);
-    }
-
-    void OutputButtonStateValue(bool buttonState)
-    {
-        buttonStateOutputEvent.Invoke(buttonState);
-    }
-
-    void OutputButtonClickEvent()
-    {
-        buttonClickOutputEvent.Invoke();
+        Debug.Log("OnPointerClick");
     }
 
 }
