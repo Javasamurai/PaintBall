@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Physics;
 using Unity.VisualScripting;
@@ -7,6 +8,7 @@ namespace Systems.Gameplay
 {
     public struct PlayerData : IComponentData
     {
+        public FixedString64Bytes PlayerName;
         public float MoveSpeed;
         public float SprintSpeed;
         public float LookSensitivity;

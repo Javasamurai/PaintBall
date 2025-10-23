@@ -6,8 +6,8 @@ namespace Systems.Gameplay
     public struct HealthComponent : IComponentData
     {
         [GhostField]
-        public int CurrentHealth;
-        public int MaxHealth;
+        public ushort CurrentHealth;
+        public ushort MaxHealth;
         [GhostField]
         public bool IsAlive;
     }

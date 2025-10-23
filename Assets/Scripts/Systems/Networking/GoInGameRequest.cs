@@ -1,3 +1,5 @@
+using DefaultNamespace;
+using Systems.Gameplay;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Entities;
@@ -14,34 +16,17 @@ namespace Systems
     [CreateAfter(typeof(RpcSystem))]
     public partial struct SetRpcSystemDynamicAssemblyListSystem : ISystem
     {
-        /// <summary>
-        /// Sets the RpcSystem.DynamicAssemblyList to true.
-        /// </summary>
-        /// <param name="state">The state.</param>
         public void OnCreate(ref SystemState state)
         {
             SystemAPI.GetSingletonRW<RpcCollection>().ValueRW.DynamicAssemblyList = true;
             state.Enabled = false;
         }
     }
-    
-    /// <summary>
-    /// RPC request from client to server for game to go "in game" and send snapshots / inputs
-    /// </summary>
     public struct GoInGameRequest : IRpcCommand { }
     
-    /// <summary>
-    /// When a client has a connection with network id, go in game and tell the server to also go in game.
-    /// INPUT: <see cref="NetworkId"/> network id of the client, but only if there is no NetworkStreamInGame.
-    /// OUTPUT: <see cref="NetworkStreamInGame"/> stream component added and creates a <see cref="GoInGameRequest"/> request.
-    /// </summary>
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
     public partial struct GoInGameClientSystem : ISystem
     {
-        /// <summary>
-        /// Only run on entities with NetworkId and no NetworkStreamInGame.
-        /// </summary>
-        /// <param name="state">The state</param>
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
@@ -49,11 +34,7 @@ namespace Systems
             var builder = new EntityQueryBuilder(Allocator.Temp).WithAll<NetworkId>().WithNone<NetworkStreamInGame>();
             state.RequireForUpdate(state.GetEntityQuery(builder));
         }
-
-        /// <summary>
-        /// Create a GoInGameRequest and add a NetworkStreamInGame component to the client entity.
-        /// </summary>
-        /// <param name="state">The state</param>
+        
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
@@ -77,10 +58,6 @@ namespace Systems
     {
         private ComponentLookup<NetworkId> networkIdFromEntity;
 
-        /// <summary>
-        /// Only run on entities with GoInGameRequest and ReceiveRpcCommandRequest.
-        /// </summary>
-        /// <param name="state">The state</param>
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
@@ -109,6 +86,7 @@ namespace Systems
                 var networkId = networkIdFromEntity[reqSrc.ValueRO.SourceConnection];
 
                 var player = commandBuffer.Instantiate(prefab);
+                var playerName = Utils.PLAYER_NAME;
                 commandBuffer.SetComponent(player, new GhostOwner {NetworkId = networkId.Value});
 
                 commandBuffer.SetComponent(player, new LocalTransform()
@@ -117,6 +95,7 @@ namespace Systems
                     Rotation = quaternion.identity,
                     Scale = 1f
                 });
+
                 // This syncs player entity after sync/desync
                 commandBuffer.AppendToBuffer(reqSrc.ValueRO.SourceConnection, new LinkedEntityGroup {Value = player});
 

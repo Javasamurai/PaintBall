@@ -1,3 +1,4 @@
+using Unity.Collections;
 using UnityEngine;
 
 namespace DefaultNamespace
@@ -19,10 +20,15 @@ namespace DefaultNamespace
         public static readonly string PLAYER_NAME_PREF = "PlayerName";
         #endregion
 
-        public static string PLAYER_NAME
+        public static FixedString64Bytes PLAYER_NAME
         {
-            get => PlayerPrefs.GetString(PLAYER_NAME_PREF, "Player");
-            set => PlayerPrefs.SetString(PLAYER_NAME_PREF, value);
-        } 
+            get
+            {
+                string playerName = PlayerPrefs.GetString(PLAYER_NAME_PREF, "Player");
+                FixedString64Bytes name = new FixedString64Bytes(playerName);
+                return name;
+            }
+            set => PlayerPrefs.SetString(PLAYER_NAME_PREF, value.ToString());
+        }
     }
 }

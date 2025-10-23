@@ -63,7 +63,7 @@ namespace Systems.Gameplay
                         var hitHealth = SystemAPI.GetComponent<HealthComponent>(hitEntity);
                         if (hitHealth.IsAlive)
                         {
-                            hitHealth.CurrentHealth = math.max(0, hitHealth.CurrentHealth - 10);
+                            hitHealth.CurrentHealth = (ushort)math.max(0, hitHealth.CurrentHealth - 31);
                             state.EntityManager.SetComponentData(hitEntity, hitHealth);
                         }
                         if (hitHealth.CurrentHealth <= 0)

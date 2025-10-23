@@ -21,7 +21,7 @@ namespace Systems.Gameplay
         {
             var commandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
             
-            foreach (var (transform, entity) in SystemAPI.Query<RefRW<LocalTransform>>().WithNone<SpawnPointTag>().WithAll<PlayerData>().WithEntityAccess())
+            foreach (var (player, transform, entity) in SystemAPI.Query<RefRW<PlayerData>,RefRW<LocalTransform>>().WithNone<SpawnPointTag>().WithEntityAccess())
             {
                 foreach (var ( s, t, e) in SystemAPI.Query<RefRO<SpawnPointComponent>, RefRO<LocalTransform>>().WithEntityAccess())
                 {
@@ -32,6 +32,14 @@ namespace Systems.Gameplay
                             occupied = true,
                             RespawnTime = 5f,
                             spawned = true
+                        });
+                        commandBuffer.SetComponent(entity, new PlayerData
+                        {
+                            PlayerName = player.ValueRW.PlayerName,
+                            MoveSpeed = player.ValueRW.MoveSpeed,
+                            LookSensitivity = player.ValueRW.LookSensitivity,
+                            SprintSpeed = player.ValueRW.SprintSpeed,
+                            groundLayer = player.ValueRW.groundLayer
                         });
                         transform.ValueRW.Position = t.ValueRO.Position;
                         commandBuffer.AddComponent<SpawnPointTag>(entity);
