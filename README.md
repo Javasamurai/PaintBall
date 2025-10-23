@@ -16,3 +16,4 @@ Bootstrap.cs and Bootstram_scene.unity controls the game flow.
 Game.cs help with the Dependency requirement and game initilization
 NetworkServices.cs connects with the netcode
 ```
+Used ECS architecture for rest of the gameplay netcode. Very decoupled and independent.
