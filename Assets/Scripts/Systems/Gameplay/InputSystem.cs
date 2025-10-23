@@ -9,11 +9,11 @@ namespace Systems.Gameplay
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
     public partial class InputSystem : SystemBase
     {
-        private InputSystem_Actions inputActions;
+        private StarterAssetInput inputActions;
         protected override void OnCreate()
         {
             base.OnCreate();
-            inputActions = new InputSystem_Actions();
+            inputActions = new StarterAssetInput();
             inputActions.Enable();
             var builder = new EntityQueryBuilder(Allocator.Temp);
             builder.WithAny<PlayerInputData>();
@@ -41,9 +41,8 @@ namespace Systems.Gameplay
                 }
 
                 inputData.ValueRW.shoot = default;
-                if (inputActions.Player.Attack.triggered)
+                if (inputActions.Player.Shoot.triggered)
                 {
-                    Debug.Log("Player shooting!");
                     inputData.ValueRW.shoot.Set();
                 }
             }

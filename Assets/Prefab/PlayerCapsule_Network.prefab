@@ -321,6 +321,7 @@ MonoBehaviour:
   look: {x: 0, y: 0}
   jump: 0
   sprint: 0
+  shoot: 0
   analogMovement: 0
   cursorLocked: 0
   cursorInputForLook: 1
@@ -561,6 +562,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNameText: {fileID: 1102234315684210826}
+  capsule: {fileID: 5393215578589016641}
 --- !u!1001 &8302839436961075171
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -48,23 +48,13 @@ namespace Core
         {
             Application.runInBackground = true;
             Application.targetFrameRate = 60;
-            CreateWorlds();
             InitializeServices();
             IsReady = true;
         }
         
-        private void CreateWorlds()
+        public void CreateWorlds(Role role = Role.ServerClient)
         {
-            if (Application.isEditor)
-            {
-                _role = Role.ServerClient;
-            }
-            else
-            {
-                _role = Role.Client;
-            }
-            
-
+            _role = role;
             if (_role == Role.ServerClient || _role == Role.Server)
             {
                 _serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");

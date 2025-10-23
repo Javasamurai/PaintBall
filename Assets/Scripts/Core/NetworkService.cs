@@ -15,6 +15,7 @@ namespace Core
         public void Initialize()
         {
             #if UNITY_EDITOR
+            Game.Instance.CreateWorlds();
             StartConnection(IP_ADDRESS_CONNECT, _port);
             #endif
         }

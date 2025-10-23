@@ -27,6 +27,7 @@ namespace Systems.Gameplay
                 {
                     // if (!s.ValueRO.occupied)
                     // {
+                    
                         commandBuffer.SetComponent(e, new SpawnPointComponent
                         {
                             occupied = true,

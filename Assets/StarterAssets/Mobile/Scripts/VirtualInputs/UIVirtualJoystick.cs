@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
+using UnityEngine.InputSystem.OnScreen;
 
-public class UIVirtualJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+public class UIVirtualJoystick : OnScreenStick, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     [System.Serializable]
     public class Event : UnityEvent<Vector2> { }
@@ -56,6 +57,7 @@ public class UIVirtualJoystick : MonoBehaviour, IPointerDownHandler, IDragHandle
             UpdateHandleRectPosition(clampedPosition * joystickRange);
         }
         
+        SendValueToControl(outputPosition);
     }
 
     public void OnPointerUp(PointerEventData eventData)

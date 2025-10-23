@@ -1,3 +1,4 @@
+using System.Collections;
 using Core;
 using DefaultNamespace;
 using TMPro;
@@ -12,6 +13,7 @@ namespace UI
         [SerializeField] private TMP_InputField ipInputField;
         [SerializeField] private Button startButton;
         [SerializeField] private TextMeshProUGUI errorText;
+        [SerializeField] private TMP_Dropdown roleDropdown;
         
         private void Start()
         {
@@ -48,6 +50,14 @@ namespace UI
         {
             Debug.Log($"Starting game with player name: {nameInputField.text}");
             Utils.PLAYER_NAME = nameInputField.text;
+            var role = (Game.Role)roleDropdown.value;
+            Game.Instance.CreateWorlds(role);
+            StartCoroutine(StartConnectionAndLoadScene());
+        }
+
+        private IEnumerator StartConnectionAndLoadScene()
+        {
+            yield return new WaitUntil(() => Game.Instance.ClientWorld.IsCreated);
             Game.GetService<NetworkService>().StartConnection(ipInputField.text, 7979);
             Game.GetService<SceneService>().LoadSceneAsync(Utils.PLAYGROUND_SCENE, false);
         }

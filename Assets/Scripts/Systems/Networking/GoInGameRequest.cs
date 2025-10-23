@@ -86,15 +86,8 @@ namespace Systems
                 var networkId = networkIdFromEntity[reqSrc.ValueRO.SourceConnection];
 
                 var player = commandBuffer.Instantiate(prefab);
-                var playerName = Utils.PLAYER_NAME;
-                commandBuffer.SetComponent(player, new GhostOwner {NetworkId = networkId.Value});
 
-                commandBuffer.SetComponent(player, new LocalTransform()
-                {
-                    Position = new float3(0, 10, 0),
-                    Rotation = quaternion.identity,
-                    Scale = 1f
-                });
+                commandBuffer.SetComponent(player, new GhostOwner {NetworkId = networkId.Value});
 
                 // This syncs player entity after sync/desync
                 commandBuffer.AppendToBuffer(reqSrc.ValueRO.SourceConnection, new LinkedEntityGroup {Value = player});

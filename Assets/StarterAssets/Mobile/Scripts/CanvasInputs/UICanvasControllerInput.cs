@@ -1,9 +1,19 @@
+using System;
+using StarterAssetsNamespace;
 using UnityEngine;
 
 namespace StarterAssets
 {
     public class UICanvasControllerInput : MonoBehaviour
     {
+        private void Start()
+        {
+            if (Application.isEditor)
+            {
+                // Hide touch input in the editor
+                gameObject.SetActive(false);
+            }
+        }
 
         [Header("Output")]
         public StarterAssetsInputs starterAssetsInputs;
@@ -28,6 +38,9 @@ namespace StarterAssets
             starterAssetsInputs.SprintInput(virtualSprintState);
         }
         
+        public void ShootInput(bool shootState)
+        {
+            starterAssetsInputs.ShootInput(shootState);
+        }
     }
-
 }

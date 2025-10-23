@@ -1,3 +1,5 @@
+using Core;
+using DefaultNamespace;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.NetCode;
@@ -11,13 +13,17 @@ public partial struct ConnectionSystem : ISystem
         state.RequireForUpdate<NetworkStreamDriver>();
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         var connectionEventsForClient = SystemAPI.GetSingleton<NetworkStreamDriver>().ConnectionEventsForTick;
         foreach (var evt in connectionEventsForClient)
         {
             UnityEngine.Debug.Log($"[{state.WorldUnmanaged.Name}] {evt.ToFixedString()}!");
+
+            if (evt.State == ConnectionState.State.Disconnected)
+            {
+                Game.GetService<SceneService>().LoadSceneAsync(Utils.MAIN_MENU_SCENE, false);
+            }
         }
     }
 }

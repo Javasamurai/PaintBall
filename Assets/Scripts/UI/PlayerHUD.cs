@@ -11,6 +11,8 @@ namespace UI
     {
         [SerializeField]
         private TextMeshPro playerNameText;
+        [SerializeField]
+        public Transform capsule;
 
         private void Start()
         {
@@ -33,6 +35,14 @@ namespace UI
                 playerNameText.text = name;
             }
         }
+        
+        public void HideCapsule()
+        {
+            if (capsule != null)
+            {
+                capsule.gameObject.SetActive(false);
+            }
+        }
     }
     
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
@@ -48,11 +58,18 @@ namespace UI
             CompleteDependency();
             foreach (var (player, entity) in SystemAPI.Query<RefRW<PlayerData>>().WithEntityAccess())
             {
-                if (!SystemAPI.HasComponent<GhostOwnerIsLocal>(entity))
+                if (PlayerHUD != null)
                 {
-                    if (PlayerHUD != null && player.ValueRO.PlayerName != null)
+                    if (!SystemAPI.HasComponent<GhostOwnerIsLocal>(entity))
                     {
-                        PlayerHUD.SetName(player.ValueRO.PlayerName.ToString());
+                        if (PlayerHUD != null && player.ValueRO.PlayerName != null)
+                        {
+                            PlayerHUD.SetName(player.ValueRO.PlayerName.ToString());
+                        }
+                    }
+                    else
+                    {
+                        PlayerHUD.HideCapsule();
                     }
                 }
             }
