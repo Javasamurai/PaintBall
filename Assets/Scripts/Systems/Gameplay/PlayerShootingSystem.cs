@@ -67,7 +67,6 @@ namespace Systems.Gameplay
                             hitHealth.CurrentHealth = (ushort)math.max(0, hitHealth.CurrentHealth - 34);
                             state.EntityManager.SetComponentData(hitEntity, hitHealth);
                             
-                            Debug.Log(hitHealth.CurrentHealth);
                             if (hitHealth.CurrentHealth <= 0)
                             {
                                 if (SystemAPI.HasComponent<BoxComponent>(hitEntity))

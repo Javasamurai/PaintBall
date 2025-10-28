@@ -14,7 +14,8 @@ namespace Systems.Gameplay
         public float SprintSpeed;
         public float LookSensitivity;
         public uint groundLayer;
-        public float pitch;
+        public float Yaw;
+        public float Pitch;
     }
 
     public class Player : MonoBehaviour

@@ -2,9 +2,8 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics.Systems;
 using Unity.Transforms;
-using UnityEngine;
+
 
 namespace Systems.Gameplay
 {
@@ -18,14 +17,14 @@ namespace Systems.Gameplay
         {
             var builder = new EntityQueryBuilder(Allocator.Temp);
             builder.WithAll<PlayerData, PlayerInputData, LocalTransform>();
-            
             state.RequireForUpdate(state.GetEntityQuery(builder));
         }
+
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             float deltaTime = SystemAPI.Time.DeltaTime;
-            
+
             var job = new PlayerMovementJob
             {
                 DeltaTime = deltaTime
@@ -33,31 +32,28 @@ namespace Systems.Gameplay
             state.Dependency = job.ScheduleParallel(state.Dependency);
         }
     }
-    
+
     [BurstCompile]
     public partial struct PlayerMovementJob : IJobEntity
     {
         public float DeltaTime;
-        public void Execute(ref LocalTransform transform, in PlayerData playerData, in PlayerInputData inputData)
+
+        public void Execute(ref LocalTransform transform, ref PlayerData playerData, in PlayerInputData inputData)
         {
-            float3 direction = new float3(inputData.move.x, 0, inputData.move.y);
-            float3 movement = direction * playerData.MoveSpeed * DeltaTime;
-            float3 localMove = math.mul(transform.Rotation, movement);
-            
-            localMove.y = 0f; // Ensure no vertical movement
+            playerData.Yaw += inputData.look.x * playerData.LookSensitivity * DeltaTime;
+            playerData.Pitch -= inputData.look.y * playerData.LookSensitivity * DeltaTime;
 
-            // Horizontal rotation 
-            float yaw = inputData.look.x * playerData.LookSensitivity * DeltaTime;
-            quaternion yawRotation = quaternion.RotateY(yaw);
-
-            // Vertical rotation
-            float pitch = inputData.look.y * playerData.LookSensitivity * DeltaTime;
+            playerData.Pitch = math.clamp(playerData.Pitch, -0.5f, 0.5f);
             
-            // TODO: This is still buggy
-            pitch = math.clamp(pitch, -0.7f, 0.7f);
-            quaternion pitchRotation = quaternion.RotateX(pitch);
-            transform.Rotation = math.mul(yawRotation, math.mul(transform.Rotation, pitchRotation));
-            transform.Position += localMove;
+            quaternion yawRotation = quaternion.RotateY(playerData.Yaw);
+            quaternion pitchRotation = quaternion.RotateX(playerData.Pitch);
+            transform.Rotation = math.mul(yawRotation, pitchRotation);
+
+            float3 forward = math.mul(yawRotation, new float3(0, 0, 1));
+            float3 right = math.mul(yawRotation, new float3(1, 0, 0));
+
+            float3 moveDir = forward * inputData.move.y + right * inputData.move.x;
+            transform.Position += moveDir * playerData.MoveSpeed * DeltaTime;
         }
     }
 }
