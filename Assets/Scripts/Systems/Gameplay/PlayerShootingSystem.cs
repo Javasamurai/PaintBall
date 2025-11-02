@@ -38,7 +38,7 @@ namespace Systems.Gameplay
                     var filter = new CollisionFilter
                     {
                         BelongsTo = (uint)1 << 1,
-                        CollidesWith = (uint) 1 << 6 | (uint) 1 << 1,
+                        CollidesWith = (uint) 1 << 6 | (uint) 1 << 0,
                         GroupIndex = 0
                     };
                     var raycastInput = new RaycastInput

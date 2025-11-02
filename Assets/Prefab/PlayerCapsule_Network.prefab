@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6858400159412643520}
   - component: {fileID: 4506456342174798860}
   - component: {fileID: 1102234315684210826}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: playerName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -187,7 +187,7 @@ GameObject:
   - component: {fileID: 5393215578589016641}
   - component: {fileID: 5393215578589016654}
   - component: {fileID: 5393215578589016655}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -280,7 +280,7 @@ GameObject:
   - component: {fileID: 7999024185011870277}
   - component: {fileID: 7223712621621679608}
   - component: {fileID: 7567437820094640839}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: PlayerCapsule_Network
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -495,10 +495,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1841dc96dc24337a91709c0eb0c4127, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
-  Look: 1
-  Sprint: 5
-  groundLayer: 5
   playerConfig: {fileID: 11400000, guid: 54ee8f9cbc6ac433bb4e18e3c7a5b1ac, type: 2}
 --- !u!136 &7999024185011870277
 CapsuleCollider:

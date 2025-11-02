@@ -38,6 +38,7 @@ namespace Systems.Gameplay
                 SprintSpeed = authoring.playerConfig.Sprint,
                 groundLayer = authoring.playerConfig.groundLayer
             });
+            
             AddComponent<PlayerInputData>(entity);
             AddComponent(entity, new HealthComponent
             {
